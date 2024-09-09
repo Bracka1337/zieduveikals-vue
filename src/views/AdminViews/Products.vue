@@ -1,0 +1,120 @@
+<template>
+    <v-main>
+        <v-app-bar app clipped-left>
+            <v-app-bar-nav-icon @click="drawer = !drawer" class="d-md-none"></v-app-bar-nav-icon>
+            <v-toolbar-title>Products</v-toolbar-title>
+                <v-text-field
+                solo
+                placeholder="Search by name or email"
+                v-model="searchTerm"
+                @input="handleSearch"
+                />
+                <v-col class="d-flex" cols="auto">
+                    <v-btn>
+                    <v-icon left>mdi-plus</v-icon>
+                    Add User
+                    </v-btn>
+                </v-col>
+        </v-app-bar>
+        <v-row>
+    <v-col v-for="user in filteredUsers" :key="user.name" cols="12" md="6" lg="3">
+        <v-card>
+        <v-card-title>
+            <v-avatar size="48">
+                <img :src="user.image" alt="User avatar" />
+            </v-avatar>
+            <v-spacer></v-spacer>
+            <div>
+            <div class="font-weight-bold">{{ user.name }}</div>
+            <div class="text-caption">{{ user.category }}</div>
+            </div>
+        </v-card-title>
+        <v-card-subtitle>
+            <v-row>
+            <v-col>
+                <div class="text-caption font-weight-medium">Description</div>
+                <div class="text-caption">{{ user.description }}</div>
+            </v-col>
+            <v-col>
+                <div class="text-caption font-weight-medium">Price</div>
+                <div class="text-caption">{{ user.price }}</div>
+            </v-col>
+            <v-col>
+                <div class="text-caption font-weight-medium">Inventory</div>
+                <div class="text-caption">{{ user.stock }} in stock</div>
+            </v-col>
+            </v-row>
+        </v-card-subtitle>
+        <v-card-actions>
+            <v-btn outlined small>
+            <v-icon left>mdi-pencil</v-icon>
+            Edit
+            </v-btn>
+            <v-btn outlined small>
+            <v-icon left>mdi-delete</v-icon>
+            Delete
+            </v-btn>
+        </v-card-actions>
+        </v-card>
+    </v-col>
+    </v-row>
+  </v-main>
+</template>
+  
+<script>
+  let data = [
+          {
+            name: 'Product A',
+            category: 'flower',
+            image: 'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
+            price: '$2,500',
+            stock: 25,
+            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus ut libero ultrices ultricies. Nullam nec purus ut libero ultrices ultricies.'
+          },
+          {
+            name: 'Product B',
+            category: 'flower',
+            image: 'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
+            price: '$1,500',
+            stock: 15,
+            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus ut libero ultrices ultricies. Nullam nec purus ut libero ultrices ultricies.'
+          },
+          {
+            name: 'Product C',
+            category: 'flower',
+            image: 'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
+            price: '$3,000',
+            stock: 10,
+            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus ut libero ultrices ultricies. Nullam nec purus ut libero ultrices ultricies.'
+          }
+        ];
+  export default {
+    data() {
+      return {
+        searchTerm: '',
+        users: data,
+        filteredUsers: data
+      }
+    },
+    methods: {
+        handleSearch() {
+            if (this.searchTerm.length > 0) {
+                this.filteredUsers = this.users.filter(user => 
+                user.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+                );
+            } else {
+                this.filteredUsers = [...this.users];
+            }
+        }
+    }
+  }
+  </script>
+  
+<style scoped>
+.v-avatar img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+</style>
+  
