@@ -14,7 +14,7 @@
                   <v-list-item-title class="text-lg font-weight-bold"> <v-icon>mdi-security</v-icon><v-list-item-content class="ml-4">Admin Panel</v-list-item-content></v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item  to="/admin/">
+              <v-list-item  to="/admin/dashboard">
                 <v-list-item-icon>
                   <v-icon>mdi-home</v-icon>
                 </v-list-item-icon>
