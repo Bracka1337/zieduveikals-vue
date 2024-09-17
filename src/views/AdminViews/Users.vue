@@ -66,66 +66,46 @@
 </template>
   
 <script>
-  let data = [
-          {
-            name: 'John Doe',
-            email: 'john@example.com',
-            avatar: 'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
-            role: 'Admin',
-            lastLogin: '2 days ago',
-            orders: 25,
-            totalSpent: '$2,500'
-          },
-          {
-            name: 'Jane Doe',
-            email: 'jane@example.com',
-            avatar: 'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
-            role: 'User',
-            lastLogin: '1 week ago',
-            orders: 12,
-            totalSpent: '$1,200'
-          },
-          {
-            name: 'Bob Smith',
-            email: 'bob@example.com',
-            avatar: 'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
-            role: 'User',
-            lastLogin: '3 months ago',
-            orders: 6,
-            totalSpent: '$500'
-          },
-          {
-            name: 'Alice Johnson',
-            email: 'alice@example.com',
-            avatar: 'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
-            role: 'User',
-            lastLogin: '2 weeks ago',
-            orders: 8,
-            totalSpent: '$800'
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      searchTerm: '',
+      users: [],
+      filteredUsers: []
+    }
+  },
+  mounted() {
+    this.fetchProducts();
+  },
+  methods: {
+    async fetchProducts() {
+      try {
+        const response = await axios.get('https://ziedu-veikals.vercel.app/get_users', {
+          headers: {
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyb2JlcnQiLCJleHAiOjE3MjY1OTgzNDl9.g4UNCyUo09CrwsCdW6SYsuSF6aBMZuRqIvcSdN0BNUI' // Замените YOUR_ACCESS_TOKEN на ваш реальный токен
           }
-        ];
-  export default {
-    data() {
-      return {
-        searchTerm: '',
-        users: data,
-        filteredUsers: data
+        });
+        this.users = response.data.users;
+        this.filteredUsers = [...this.users];
+      } catch (error) {
+        console.error('Ошибка при загрузке продуктов:', error);
+        // Вы можете также обновить UI, чтобы отобразить сообщение об ошибке
       }
     },
-    methods: {
-        handleSearch() {
-            if (this.searchTerm.length > 0) {
-                this.filteredUsers = this.users.filter(user => 
-                user.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                user.email.toLowerCase().includes(this.searchTerm.toLowerCase())
-                );
-            } else {
-                this.filteredUsers = [...this.users];
-            }
-        }
+    handleSearch() {
+      if (this.searchTerm.length > 0) {
+        this.filteredUsers = this.users.filter(user => 
+          user.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+        );
+      } else {
+        this.filteredUsers = [...this.users];
+      }
     }
   }
-  </script>
+}
+</script>
   
 <style scoped>
 .v-avatar img {

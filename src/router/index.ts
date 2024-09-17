@@ -19,7 +19,7 @@ const router = createRouter({
       component: () => import("../views/Admin.vue"),
       children: [
         {
-          path: "", // Default path for /admin
+          path: "dashboard", // Default path for /admin
           name: "dashboard",
           component: () => import("../views/AdminViews/Dashboard.vue"),
         },
@@ -37,6 +37,11 @@ const router = createRouter({
           path: "products", // Default path for /admin
           name: "products",
           component: () => import("../views/AdminViews/Products.vue"),
+        },
+        {
+          path: "settings", // Default path for /admin
+          name: "settings",
+          component: () => import("../views/AdminViews/Settings.vue"),
         },
       ],
     },

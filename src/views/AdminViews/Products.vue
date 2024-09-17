@@ -62,53 +62,48 @@
 </template>
   
 <script>
-  let data = [
-          {
-            name: 'Product A',
-            category: 'flower',
-            image: 'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
-            price: '$2,500',
-            stock: 25,
-            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus ut libero ultrices ultricies. Nullam nec purus ut libero ultrices ultricies.'
-          },
-          {
-            name: 'Product B',
-            category: 'flower',
-            image: 'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
-            price: '$1,500',
-            stock: 15,
-            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus ut libero ultrices ultricies. Nullam nec purus ut libero ultrices ultricies.'
-          },
-          {
-            name: 'Product C',
-            category: 'flower',
-            image: 'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?cs=srgb&dl=pexels-anjana-c-169994-674010.jpg&fm=jpg',
-            price: '$3,000',
-            stock: 10,
-            description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus ut libero ultrices ultricies. Nullam nec purus ut libero ultrices ultricies.'
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      searchTerm: '',
+      users: [],
+      filteredUsers: []
+    }
+  },
+  mounted() {
+    this.fetchProducts();
+  },
+  methods: {
+    async fetchProducts() {
+      try {
+        const response = await axios.get('https://ziedu-veikals.vercel.app/products', {
+          headers: {
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyb2JlcnQiLCJleHAiOjE3MjY1OTcyNzV9.VfQCxBsPpSeGqU4C78juZvtAZbIT6hCTQ6qUVM0gudI' // Замените YOUR_ACCESS_TOKEN на ваш реальный токен
           }
-        ];
-  export default {
-    data() {
-      return {
-        searchTerm: '',
-        users: data,
-        filteredUsers: data
+        });
+        this.users = response.data.products;
+        this.filteredUsers = [...this.users];
+      } catch (error) {
+        console.error('Ошибка при загрузке продуктов:', error);
+        // Вы можете также обновить UI, чтобы отобразить сообщение об ошибке
       }
     },
-    methods: {
-        handleSearch() {
-            if (this.searchTerm.length > 0) {
-                this.filteredUsers = this.users.filter(user => 
-                user.name.toLowerCase().includes(this.searchTerm.toLowerCase())
-                );
-            } else {
-                this.filteredUsers = [...this.users];
-            }
-        }
+    handleSearch() {
+      if (this.searchTerm.length > 0) {
+        this.filteredUsers = this.users.filter(user => 
+          user.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+        );
+      } else {
+        this.filteredUsers = [...this.users];
+      }
     }
   }
-  </script>
+}
+</script>
+
+
   
 <style scoped>
 .v-avatar img {
