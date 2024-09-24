@@ -80,14 +80,14 @@ export default {
       try {
         const response = await axios.get('https://ziedu-veikals.vercel.app/products', {
           headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyb2JlcnQiLCJleHAiOjE3MjY1OTcyNzV9.VfQCxBsPpSeGqU4C78juZvtAZbIT6hCTQ6qUVM0gudI' // Замените YOUR_ACCESS_TOKEN на ваш реальный токен
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyb2JlcnQiLCJleHAiOjE3MjY1OTcyNzV9.VfQCxBsPpSeGqU4C78juZvtAZbIT6hCTQ6qUVM0gudI'
           }
         });
         this.users = response.data.products;
         this.filteredUsers = [...this.users];
       } catch (error) {
         console.error('Ошибка при загрузке продуктов:', error);
-        // Вы можете также обновить UI, чтобы отобразить сообщение об ошибке
+
       }
     },
     handleSearch() {
