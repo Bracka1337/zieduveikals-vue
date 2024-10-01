@@ -1,38 +1,38 @@
 <template>
-    <header class="header">
-        <div class="logo">Ziedi.lv</div>
-        <nav class="navbar">
-            <ul :class="['nav-links', { 'nav-active': isMenuActive }]">
-                <li><router-link to="/">Produkti</router-link></li>
-                <li><router-link to="/about">Par mums</router-link></li>
-                <li><router-link to= '/contact'>Kontakti</router-link></li>
-            </ul>
-            <div class="auth-buttons">
-                <router-link to="/contact" class="btn btn-login">Ieiet</router-link>
-            </div>
-            <div class="hamburger" :class="{ active: isMenuActive }" @click="toggleMenu">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
-        </nav>
-    </header>
+  <header class="header">
+    <div class="logo">Ziedi.lv</div>
+    <nav class="Navbar">
+      <ul :class="['nav-links', { 'nav-active': isMenuActive }]">
+        <li><router-link to="/">Produkti</router-link></li>
+        <li><router-link to="/about">Par mums</router-link></li>
+        <li><router-link to="/contact">Kontakti</router-link></li>
+      </ul>
+      <div class="auth-buttons">
+        <router-link class="btn btn-login" to="/contact">Ieiet</router-link>
+      </div>
+      <div class="hamburger" :class="{ active: isMenuActive }" @click="toggleMenu">
+        <span class="bar" />
+        <span class="bar" />
+        <span class="bar" />
+      </div>
+    </nav>
+  </header>
 </template>
 
 <script>
-export default {
-    name: "Navbar",
-    data() {
-        return {
-            isMenuActive: false,
-        };
+  export default {
+    name: 'Navbar',
+    data () {
+      return {
+        isMenuActive: false,
+      }
     },
     methods: {
-        toggleMenu() {
-            this.isMenuActive = !this.isMenuActive;
-        }
-    }
-}
+      toggleMenu () {
+        this.isMenuActive = !this.isMenuActive
+      },
+    },
+  }
 </script>
 
 <style scoped>
@@ -46,7 +46,7 @@ export default {
     background: white;
     color: #000;
     display: flex;
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: center;
     z-index: 100;
 }
@@ -58,11 +58,11 @@ export default {
     font-weight: 700;
 }
 
-.navbar {
+.Navbar {
     display: flex;
     align-items: center;
     flex-grow: 1;
-    justify-content: center; 
+    justify-content: center;
     margin-left: 30%;
 }
 
@@ -70,8 +70,8 @@ export default {
     display: flex;
     justify-content: center;
     list-style-type: none;
-    padding: 0; 
-    margin: 0; 
+    padding: 0;
+    margin: 0;
 }
 
 .nav-links li {
@@ -120,9 +120,8 @@ export default {
     opacity: 0;
 }
 
-
 .auth-buttons {
-    margin-left: auto; 
+    margin-left: auto;
 }
 
 .auth-buttons .btn {
@@ -145,33 +144,32 @@ export default {
     background-color: rgb(0, 0, 0);
 }
 
-
 @media (max-width: 767px) {
     .header {
         padding: 20px 20px;
         flex-direction: column;
-        align-items: flex-start; 
+        align-items: flex-start;
     }
 
-    .navbar {
+    .Navbar {
         flex-direction: column;
         width: 100%;
     }
 
     .auth-buttons {
         margin-top: 20px;
-        align-self: flex-end; 
+        align-self: flex-end;
     }
 
     .nav-links {
-        display: none; 
+        display: none;
         flex-direction: column;
         width: 100%;
     }
 
     .nav-active {
-        display: flex; 
-        justify-content: center; 
+        display: flex;
+        justify-content: center;
         width: 100%;
     }
 

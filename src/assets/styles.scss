@@ -1,0 +1,9 @@
+/* src/assets/styles.scss */
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* Your custom SCSS styles here */
+body {
+  font-family: 'Helvetica', sans-serif;
+}
