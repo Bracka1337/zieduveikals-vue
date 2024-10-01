@@ -8,10 +8,8 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AdminTable: typeof import('./components/AdminTable.vue')['default']
-    AppFooter: typeof import('./components/AppFooter.vue')['default']
     Banner: typeof import('./components/Banner.vue')['default']
     Footer: typeof import('./components/Footer.vue')['default']
-    HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     Navbar: typeof import('./components/Navbar.vue')['default']
     ProductGrid: typeof import('./components/ProductGrid.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
