@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="hidden lg:flex items-center">
-        <button class="rounded-md p-2 w-20 bg-black text-white text-sm">Ieiet</button>
+        <button @click="openLoginModal" class="rounded-md p-2 w-20 bg-black text-white text-sm ieiet-button">Ieiet</button>
       </div>
       <div class="lg:hidden">
         <button @click="toggleMobileMenu" class="text-gray-500 hover:text-black focus:outline-none focus:text-black">
@@ -22,27 +22,87 @@
       </div>
     </nav>
 
+
     <div v-if="isMobileMenuOpen" class="lg:hidden">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
         <a href="#" class="block text-lg text-gray-700 hover:bg-gray-100">Par mums</a>
         <a href="#" class="block text-lg text-gray-700 hover:bg-gray-100">Kontakti</a>
-        <a href="#" class="block text-lg text-white bg-black text-center rounded-md py-2 hover:bg-gray-800 mt-4">Ieiet</a>
+        <button @click="openLoginModal" class="block text-lg text-white bg-black text-center rounded-md py-2 hover:bg-gray-800 mt-4">Ieiet</button>
       </div>
     </div>
+
+  
+    <Modal v-if="showModal" :isVisible="showModal" @close="closeModal">
+      <component :is="activeComponent"></component>
+      <div class="switch-form">
+        <p v-if="activeComponent === 'Login'">
+          Neesi piereģistrējies? 
+          <button @click="switchToRegister" class="switch-button">Reģistrēties</button>
+        </p>
+        <p v-if="activeComponent === 'Register'">
+          Esi jau reģistrējies? 
+          <button @click="openLoginModal" class="switch-button">Ieiet</button>
+        </p>
+      </div>
+    </Modal>
   </header>
 </template>
 
 <script>
+import Modal from './Modal.vue';
+import Login from './Login.vue';
+import Register from './Register.vue';
+
 export default {
+  components: {
+    Modal,
+    Login,
+    Register
+  },
   data() {
     return {
       isMobileMenuOpen: false,
+      showModal: false,
+      activeComponent: 'Login'
     };
   },
   methods: {
     toggleMobileMenu() {
       this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    },
+    openLoginModal() {
+      this.activeComponent = 'Login';
+      this.showModal = true;
+    },
+    closeModal() {
+      this.showModal = false;
+    },
+    switchToRegister() {
+      this.activeComponent = 'Register';
+    },
+    switchToLogin() {
+      this.activeComponent = 'Login';
     }
   }
-}
+};
 </script>
+
+<style scoped>
+.switch-form {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.ieiet-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.switch-button {
+  color: #007bff; 
+}
+</style>

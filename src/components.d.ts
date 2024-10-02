@@ -10,8 +10,11 @@ declare module 'vue' {
     AdminTable: typeof import('./components/AdminTable.vue')['default']
     Banner: typeof import('./components/Banner.vue')['default']
     Footer: typeof import('./components/Footer.vue')['default']
+    Login: typeof import('./components/Login.vue')['default']
+    Modal: typeof import('./components/Modal.vue')['default']
     Navbar: typeof import('./components/Navbar.vue')['default']
     ProductGrid: typeof import('./components/ProductGrid.vue')['default']
+    Register: typeof import('./components/Register.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
