@@ -84,7 +84,7 @@ export default {
       try {
         const response = await axios.get('https://ziedu-veikals.vercel.app/get_users', {
           headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJxcXJnIiwiZXhwIjoxNzI3MTc2NzI3fQ.EO0VjutgwSMoinQNFSvzjsKpNPrc78T911TpIUrtiCA'
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI3MjU3MDU1fQ.D9TlWD2k_tgRrZFOOVNSjr-Zs303SMLN8UmjU0SRSmc'
           }
         });
         this.users = response.data.users;

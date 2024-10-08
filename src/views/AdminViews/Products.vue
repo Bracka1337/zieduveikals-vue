@@ -17,7 +17,7 @@
                 </v-col>
         </v-app-bar>
         <v-row>
-    <v-col v-for="user in filteredUsers" :key="user.name" cols="12" md="6" lg="3">
+    <v-col v-for="user in filteredProducts" :key="user.name" cols="12" md="6" lg="3">
         <v-card>
         <v-card-title>
             <v-avatar size="48">
@@ -41,7 +41,7 @@
             </v-col>
             <v-col>
                 <div class="text-caption font-weight-medium">Inventory</div>
-                <div class="text-caption">{{ user.stock }} in stock</div>
+                <div class="text-caption">{{ user.quantity }} in stock</div>
             </v-col>
             </v-row>
         </v-card-subtitle>
@@ -50,7 +50,7 @@
             <v-icon left>mdi-pencil</v-icon>
             Edit
             </v-btn>
-            <v-btn outlined small>
+            <v-btn outlined small @click="handleDelete(user.id)">
             <v-icon left>mdi-delete</v-icon>
             Delete
             </v-btn>
@@ -61,30 +61,49 @@
   </v-main>
 </template>
   
-<script>
+<script lang="ts">
 import axios from 'axios';
+
+interface ProductOption {
+  description: string;
+  id: number;
+  images: string[];
+  name: string;
+  type: 'COLOR' | 'SIZE' | 'MATERIAL'; 
+}
+
+interface Product {
+  description: string;
+  id: number;
+  name: string;
+  options: ProductOption[];
+  photo: string;
+  price: number;
+  quantity: number;
+  type: 'BOUQUET'; 
+}
 
 export default {
   data() {
-    return {
-      searchTerm: '',
-      users: [],
-      filteredUsers: []
-    }
-  },
+  return {
+    searchTerm: '',
+    products: [] as Product[],
+    filteredProducts: [] as Product[],
+  }
+},
   mounted() {
     this.fetchProducts();
   },
   methods: {
     async fetchProducts() {
       try {
-        const response = await axios.get('https://ziedu-veikals.vercel.app/products', {
+        const response = await axios.get('http://127.0.0.1:5000/products', {
           headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyb2JlcnQiLCJleHAiOjE3MjY1OTcyNzV9.VfQCxBsPpSeGqU4C78juZvtAZbIT6hCTQ6qUVM0gudI'
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI3MjYwMTU2fQ.giBISzLj9bvaLO7dys5p4EakeHuVFJ2PToSO9mDIBfk'
           }
         });
-        this.users = response.data.products;
-        this.filteredUsers = [...this.users];
+        this.products = response.data.products;
+        this.filteredProducts = [...this.products];
       } catch (error) {
         console.error('Ошибка при загрузке продуктов:', error);
 
@@ -92,11 +111,24 @@ export default {
     },
     handleSearch() {
       if (this.searchTerm.length > 0) {
-        this.filteredUsers = this.users.filter(user => 
+        this.filteredProducts = this.products.filter(user => 
           user.name.toLowerCase().includes(this.searchTerm.toLowerCase())
         );
       } else {
-        this.filteredUsers = [...this.users];
+        this.filteredProducts = [...this.products];
+      }
+    },
+    async handleDelete(productId: number) {
+      try {
+        await axios.delete(`http://127.0.0.1:5000/product/${productId}`, {
+          headers: {
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI3MjYwMTU2fQ.giBISzLj9bvaLO7dys5p4EakeHuVFJ2PToSO9mDIBfk'
+          }
+        });
+        this.filteredProducts = this.filteredProducts.filter(user => user.id !== productId);
+        this.products = this.products.filter(user => user.id !== productId);
+      } catch (error) {
+        console.error('Ошибка при удалении продукта:', error);
       }
     }
   }
