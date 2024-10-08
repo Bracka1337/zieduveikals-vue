@@ -1,7 +1,5 @@
 <template>
     <div class="min-h-screen flex flex-col">
-  <!-- Header and main content -->
-  
   <footer class="bg-gray-200 p-4 text-center fixed bottom-0 left-0 right-0">
     <nav class="inline-grid grid-cols-3 gap-4 mb-4">
       <a class="text-lg">Piegade</a>
