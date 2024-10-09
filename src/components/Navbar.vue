@@ -6,8 +6,8 @@
       </div>
       <div class="hidden lg:flex absolute left-1/2 transform -translate-x-1/2">
         <div class="flex space-x-8">
-          <button class="text-lg">Par mums</button>
-          <button class="text-lg">Kontakti</button>
+          <button href="#" class="text-lg">Par mums</button>
+          <button href="#" class="text-lg">Kontakti</button>
         </div>
       </div>
       <div class="hidden lg:flex items-center">
@@ -32,7 +32,7 @@
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
         <a class="block text-lg text-gray-700 hover:bg-gray-100" href="#">Par mums</a>
         <a class="block text-lg text-gray-700 hover:bg-gray-100" href="#">Kontakti</a>
-        <button class="block text-lg text-white bg-black text-center rounded-md py-2 hover:bg-gray-800 mt-4" @click="openLoginModal">Ieiet</button>
+        <button class="block text-lg text-white bg-black text-center rounded-md py-2 hover:bg-gray-800 mt-4 w-full" @click="openLoginModal">Ieiet</button>
       </div>
     </div>
 
