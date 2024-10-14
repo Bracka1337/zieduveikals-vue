@@ -38,12 +38,13 @@
                 </v-list-item-icon>
                 <v-list-item-content class="ml-4">Orders</v-list-item-content>
               </v-list-item>
-              <v-list-item to="/admin/settings">
+              <v-list-item to="/admin/promocodes">
                 <v-list-item-icon>
-                  <v-icon>mdi-cog</v-icon>
+                  <v-icon>mdi-cart</v-icon>
                 </v-list-item-icon>
-                <v-list-item-content class="ml-4">Settings</v-list-item-content>
+                <v-list-item-content class="ml-4">Promocodes</v-list-item-content>
               </v-list-item>
+             
             </v-list>
           </v-navigation-drawer>
   
