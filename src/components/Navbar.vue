@@ -10,8 +10,20 @@
           <a href="/About" class="text-lg">Par mums</a>
         </div>
       </div>
-      <div class="hidden lg:flex items-center">
-      <svg xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="hidden lg:flex items-center space-x-6">
+
+        <a href="/Cart" class="text-gray-500 hover:text-black">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            class="w-6 h-6"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l1.25-5H6.75M16 21a2 2 0 100-4 2 2 0 000 4zM8 21a2 2 0 100-4 2 2 0 000 4zM5 3h14l-1.25 5H6.25L5 3z" />
+          </svg>
+        </a>
+
         <button class="rounded-md p-2 w-20 bg-black text-white text-sm ieiet-button" @click="openLoginModal">Ieiet</button>
       </div>
       <div class="lg:hidden">
@@ -85,8 +97,9 @@
       switchToRegister () {
         this.activeComponent = 'Register'
       },
-      switchToLogin () {
-        this.activeComponent = 'Login'
+      goToCart () {
+        // Логика перехода к странице корзины
+        this.$router.push('/cart');
       },
     },
   }
