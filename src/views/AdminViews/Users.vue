@@ -1,116 +1,361 @@
 <template>
-    <v-main>
-        <v-app-bar app clipped-left>
-            <v-app-bar-nav-icon @click="drawer = !drawer" class="d-md-none"></v-app-bar-nav-icon>
-            <v-toolbar-title>Users</v-toolbar-title>
-                <v-text-field
-                solo
-                placeholder="Search by name or email"
-                v-model="searchTerm"
-                @input="handleSearch"
-                />
-                <v-col class="d-flex" cols="auto">
-                    <v-btn>
-                    <v-icon left>mdi-plus</v-icon>
-                    Add User
-                    </v-btn>
+  <v-main>
+    <!-- App Bar -->
+    <v-app-bar app clipped-left>
+      <v-app-bar-nav-icon @click="drawer = !drawer" class="d-md-none"></v-app-bar-nav-icon>
+      <v-toolbar-title>Users</v-toolbar-title>
+      <v-text-field
+        solo
+        placeholder="Search by name or email"
+        v-model="searchTerm"
+        @input="handleSearchDebounced"
+        class="mx-4 search-bar"
+        clearable
+        hide-details
+        outlined
+        dense
+      />
+      <v-col class="d-flex" cols="auto">
+        <v-btn color="primary" @click="addUser">
+          <v-icon left>mdi-plus</v-icon>
+          Add User
+        </v-btn>
+      </v-col>
+    </v-app-bar>
+
+    <!-- Navigation Drawer (Optional) -->
+    <v-navigation-drawer v-model="drawer" app>
+      <!-- Drawer content goes here -->
+      <v-list>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title>Navigation Item</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <!-- Add more navigation items as needed -->
+      </v-list>
+    </v-navigation-drawer>
+
+    <!-- Users Grid -->
+    <v-container fluid>
+      <v-row>
+        <v-col
+          v-for="user in filteredUsers"
+          :key="user.email"
+          cols="12"
+          md="6"
+          lg="3"
+        >
+          <v-card>
+            <v-card-title>
+              <v-spacer></v-spacer>
+              <div>
+                <div class="font-weight-bold">{{ user.username }}</div>
+                <div class="text-caption">{{ user.email }}</div>
+              </div>
+            </v-card-title>
+            <v-card-subtitle>
+              <v-row>
+                <v-col>
+                  <div class="text-caption font-weight-medium">Role</div>
+                  <div class="text-caption">{{ user.role }}</div>
                 </v-col>
-        </v-app-bar>
-        <v-row>
-    <v-col v-for="user in filteredUsers" :key="user.email" cols="12" md="6" lg="3">
-        <v-card>
+              </v-row>
+            </v-card-subtitle>
+            <v-card-actions>
+              <v-btn color="secondary" @click="openEditDialog(user)">
+                <v-icon left>mdi-pencil</v-icon>
+                Edit
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+
+    <!-- Edit User Dialog -->
+    <v-dialog v-model="editDialog" max-width="500px">
+      <v-card>
         <v-card-title>
-            <v-avatar size="48">
-            <img :src="user.avatar" alt="User avatar" />
-            </v-avatar>
-            <v-spacer></v-spacer>
-            <div>
-            <div class="font-weight-bold">{{ user.name }}</div>
-            <div class="text-caption">{{ user.email }}</div>
-            </div>
+          <span class="headline">Edit User</span>
         </v-card-title>
-        <v-card-subtitle>
-            <v-row>
-            <v-col>
-                <div class="text-caption font-weight-medium">Role</div>
-                <div class="text-caption">{{ user.role }}</div>
-            </v-col>
-            <v-col>
-                <div class="text-caption font-weight-medium">Last Login</div>
-                <div class="text-caption">{{ user.lastLogin }}</div>
-            </v-col>
-            <v-col>
-                <div class="text-caption font-weight-medium">Orders</div>
-                <div class="text-caption">{{ user.orders }}</div>
-            </v-col>
-            <v-col>
-                <div class="text-caption font-weight-medium">Total Spent</div>
-                <div class="text-caption">{{ user.totalSpent }}</div>
-            </v-col>
-            </v-row>
-        </v-card-subtitle>
+        <v-card-text>
+          <v-form ref="editForm" v-model="formValid">
+            <v-text-field
+              label="Username"
+              v-model="editFormData.username"
+              :rules="[v => !!v || 'Username is required']"
+              required
+            ></v-text-field>
+            <v-text-field
+              label="Email"
+              v-model="editFormData.email"
+              :rules="[v => !!v || 'Email is required', v => /.+@.+\..+/.test(v) || 'E-mail must be valid']"
+              required
+            ></v-text-field>
+            <v-select
+              label="Role"
+              v-model="editFormData.role"
+              :items="roles"
+              :rules="[v => !!v || 'Role is required']"
+              required
+            ></v-select>
+            <v-select
+              label="Promocode"
+              v-model="editFormData.promocode_id"
+              :items="promocodes"
+              item-text="code"
+              item-value="id"
+              clearable
+              placeholder="Select a promocode"
+            ></v-select>
+          </v-form>
+        </v-card-text>
         <v-card-actions>
-            <v-btn outlined small>
-            <v-icon left>mdi-pencil</v-icon>
-            Edit
-            </v-btn>
-            <v-btn outlined small>
-            <v-icon left>mdi-delete</v-icon>
-            Delete
-            </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="closeEditDialog">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="submitEdit" :disabled="!formValid">Save</v-btn>
         </v-card-actions>
-        </v-card>
-    </v-col>
-    </v-row>
+      </v-card>
+    </v-dialog>
+
+    <!-- Snackbar for Feedback Messages -->
+    <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
+      {{ snackbar.message }}
+      <v-btn text @click="snackbar.show = false">Close</v-btn>
+    </v-snackbar>
   </v-main>
 </template>
-  
-<script>
-import axios from 'axios';
 
-export default {
-  data() {
-    return {
-      searchTerm: '',
-      users: [],
-      filteredUsers: []
-    }
-  },
-  mounted() {
-    this.fetchProducts();
-  },
-  methods: {
-    async fetchProducts() {
+<script lang="ts">
+import { defineComponent, ref, reactive, onMounted } from 'vue';
+import axios from 'axios';
+import { debounce } from 'lodash';
+
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  role: string;
+  promocode_id: number | null;
+  // Add other fields            as necessary
+}
+
+interface Promocode {
+  id: number;
+  code: string;
+}
+
+export default defineComponent({
+  name: 'UsersList',
+  setup() {
+    const searchTerm = ref('');
+    const users = ref<User[]>([]);
+    const filteredUsers = ref<User[]>([]);
+    const drawer = ref(false);
+
+    const editDialog = ref(false);
+    const editFormData = reactive({
+      id: 0,
+      username: '',
+      email: '',
+      role: '',
+      promocode_id: null as number | null,
+    });
+    const formValid = ref(false);
+    const roles = ['ADMIN', 'USER', 'MODERATOR']; // Adjust roles as per your backend
+    const promocodes = ref<Promocode[]>([]);
+
+    const snackbar = reactive({
+      show: false,
+      message: '',
+      color: '',
+    });
+
+    // Debounced search to improve performance
+    const handleSearchDebounced = debounce(() => {
+      handleSearch();
+    }, 300);
+
+    // Fetch users from the backend
+    const fetchUsers = async () => {
       try {
-        const response = await axios.get('https://ziedu-veikals.vercel.app/get_users', {
+        const response = await axios.get('http://127.0.0.1:5000/get_users', {
           headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI3MjU3MDU1fQ.D9TlWD2k_tgRrZFOOVNSjr-Zs303SMLN8UmjU0SRSmc'
-          }
+            Authorization:
+              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI4OTI0NjQwfQ.G1VMpLDRnpSybt83pf3nyuU2NFfY_tLGykFJIv5R28U', // Replace with dynamic token management
+          },
         });
-        this.users = response.data.users;
-        this.filteredUsers = [...this.users];
+        users.value = response.data.users;
+        filteredUsers.value = [...users.value];
       } catch (error) {
-        console.error('Ошибка при загрузке продуктов:', error);
+        console.error('Error loading users:', error);
+        showSnackbar('Error loading users', 'error');
       }
-    },
-    handleSearch() {
-      if (this.searchTerm.length > 0) {
-        this.filteredUsers = this.users.filter(user => 
-          user.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+    };
+
+    // Fetch promocodes from the backend
+    const fetchPromocodes = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:5000/get_promocodes', {
+          headers: {
+            Authorization:
+              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI4OTI0NjQwfQ.G1VMpLDRnpSybt83pf3nyuU2NFfY_tLGykFJIv5R28U', // Replace with dynamic token management
+          },
+        });
+        promocodes.value = response.data.promocodes;
+      } catch (error) {
+        console.error('Error loading promocodes:', error);
+        showSnackbar('Error loading promocodes', 'error');
+      }
+    };
+
+    // Handle search functionality
+    const handleSearch = () => {
+      const term = searchTerm.value.trim().toLowerCase();
+      if (term.length > 0) {
+        filteredUsers.value = users.value.filter(
+          (user) =>
+            user.username.toLowerCase().includes(term) ||
+            user.email.toLowerCase().includes(term)
         );
       } else {
-        this.filteredUsers = [...this.users];
+        filteredUsers.value = [...users.value];
       }
-    }
-  }
-}
+    };
+
+    // Open Edit Dialog with selected user data
+    const openEditDialog = (user: User) => {
+      editFormData.id = user.id;
+      editFormData.username = user.username;
+      editFormData.email = user.email;
+      editFormData.role = user.role;
+      editFormData.promocode_id = user.promocode_id;
+      editDialog.value = true;
+    };
+
+    // Close Edit Dialog
+    const closeEditDialog = () => {
+      editDialog.value = false;
+    };
+
+    // Submit Edit Form
+    const submitEdit = async () => {
+      if (!formValid.value) return;
+
+      try {
+        const payload: any = {
+          username: editFormData.username,
+          email: editFormData.email,
+          role: editFormData.role,
+          promocode_id: editFormData.promocode_id,
+        };
+
+        const response = await axios.patch(
+          `http://127.0.0.1:5000/user/${editFormData.id}`,
+          payload,
+          {
+            headers: {
+              Authorization:
+                'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI4OTI0NjQwfQ.G1VMpLDRnpSybt83pf3nyuU2NFfY_tLGykFJIv5R28U', // Replace with dynamic token management
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          // Update the local users list
+          const index = users.value.findIndex((u) => u.id === editFormData.id);
+          if (index !== -1) {
+            users.value[index] = {
+              ...users.value[index],
+              username: editFormData.username,
+              email: editFormData.email,
+              role: editFormData.role,
+              promocode_id: editFormData.promocode_id,
+            };
+            handleSearch(); // Reapply search filter
+          }
+          showSnackbar('User updated successfully', 'success');
+          closeEditDialog();
+        }
+      } catch (error: any) {
+        console.error('Error updating user:', error);
+        const message =
+          error.response?.data?.message || 'An error occurred while updating the user.';
+        showSnackbar(message, 'error');
+      }
+    };
+
+    // Show Snackbar for feedback messages
+    const showSnackbar = (message: string, color: string) => {
+      snackbar.message = message;
+      snackbar.color = color;
+      snackbar.show = true;
+    };
+
+    // Optional: Methods to handle Add actions
+    const addUser = () => {
+      // Implement Add User functionality
+      console.log('Add User clicked');
+      // You might want to open a similar dialog for adding users
+    };
+
+    // Utility to format date strings
+    const formatDate = (dateStr: string): string => {
+      const date = new Date(dateStr);
+      return date.toLocaleString();
+    };
+
+    // Fetch users and promocodes on component mount
+    onMounted(() => {
+      fetchUsers();
+      fetchPromocodes();
+    });
+
+    return {
+      searchTerm,
+      users,
+      filteredUsers,
+      drawer,
+      handleSearchDebounced,
+      handleSearch,
+      addUser,
+      // Removed editUser and deleteUser as separate methods
+      openEditDialog,
+      closeEditDialog,
+      submitEdit,
+      editDialog,
+      editFormData,
+      formValid,
+      roles,
+      promocodes,
+      showSnackbar,
+      snackbar,
+      formatDate,
+    };
+  },
+});
 </script>
-  
+
 <style scoped>
-.v-avatar img {
-width: 100%;
-height: 100%;
-object-fit: cover;
+/* Adjust the search bar width or margins if necessary */
+.search-bar {
+  max-width: 400px;
+}
+
+/* Style the Add User button for better visibility */
+.v-btn {
+  display: flex;
+  align-items: center;
+}
+
+.v-btn .v-icon {
+  margin-right: 4px;
+}
+
+/* Optional: Style the Edit Dialog */
+.headline {
+  font-weight: bold;
 }
 </style>
-  

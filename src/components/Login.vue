@@ -5,6 +5,9 @@
       <div class="form-group">
         <label for="email">E-pasts</label>
         <input v-model="email" class="input-box" required type="email">
+        <div v-if="!isValidEmail(email) && email.length > 0" class="error-message">
+          Ievadiet derīgu e-pastu
+        </div>
       </div>
       <div class="form-group">
         <label for="password">Parole</label>
@@ -15,44 +18,74 @@
   </div>
 </template>
 
-  <script>
-  export default {
-    data () {
-      return {
-        email: '',
-        password: '',
-      }
+<script>
+export default {
+  data() {
+    return {
+      email: '',
+      password: ''
+    };
+  },
+  methods: {
+    isValidEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
     },
-    methods: {
-      submitLogin () {
-        console.log('Logging in with', this.email, this.password)
-      },
-    },
+    submitLogin() {
+      console.log('Logging in with', this.email, this.password);
+    }
   }
-  </script>
+};
+</script>
 
-  <style scoped>
-  .login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
+<style scoped>
+.login-form {
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
 
-  .form-group {
-    display: flex;
-    flex-direction: column;
-  }
+.form-group {
+  margin-bottom: 15px;
+}
 
-  .btn {
-    background-color: #007bff;
-    color: white;
-    padding: 10px;
-    border: none;
-    cursor: pointer;
+.input-box {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
 
-  }
+.btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+  border-radius: 4px;
+  font-weight: bold;
+}
 
-  .btn:hover {
-    background-color: #0056b3;
-  }
-  </style>
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.modal-title {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: -8px;
+  margin-bottom: 8px;
+}
+</style>

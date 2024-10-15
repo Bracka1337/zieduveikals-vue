@@ -24,6 +24,11 @@ const router = createRouter({
           component: () => import('../views/AdminViews/Dashboard.vue'),
         },
         {
+          path: 'promocodes',
+          name: 'promocodes',
+          component: () => import('../views/AdminViews/Promocodes.vue'),
+        },
+        {
           path: 'users', // Default path for /admin
           name: 'users',
           component: () => import('../views/AdminViews/Users.vue'),
@@ -37,11 +42,6 @@ const router = createRouter({
           path: 'products', // Default path for /admin
           name: 'products',
           component: () => import('../views/AdminViews/Products.vue'),
-        },
-        {
-          path: 'settings', // Default path for /admin
-          name: 'settings',
-          component: () => import('../views/AdminViews/Settings.vue'),
         },
       ],
     },
