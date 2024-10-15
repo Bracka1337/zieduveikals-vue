@@ -2,12 +2,12 @@
   <header class="bg-white w-full">
     <nav aria-label="Global" class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
       <div class="flex lg:flex-1">
-        <span class="text-2xl">Ziedi.lv</span>
+        <a href="/" class="text-2xl">Ziedi.lv</a>
       </div>
       <div class="hidden lg:flex absolute left-1/2 transform -translate-x-1/2">
         <div class="flex space-x-8">
-          <button href="#" class="text-lg">Par mums</button>
-          <button href="#" class="text-lg">Kontakti</button>
+          <a href="/" class="text-lg">Produkti</a>
+          <a href="/About" class="text-lg">Par mums</a>
         </div>
       </div>
       <div class="hidden lg:flex items-center">
