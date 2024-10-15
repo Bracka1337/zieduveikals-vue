@@ -11,6 +11,7 @@
         </div>
       </div>
       <div class="hidden lg:flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg"></svg>
         <button class="rounded-md p-2 w-20 bg-black text-white text-sm ieiet-button" @click="openLoginModal">Ieiet</button>
       </div>
       <div class="lg:hidden">
