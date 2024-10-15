@@ -25,6 +25,16 @@
           <span class="text-2xl font-semibold text-gray-900">${{ product.price }}</span>
         </div>
 
+        <div class="mt-4 flex items-center">
+          <label for="quantity" class="mr-2">Quantity:</label>
+          <input 
+            type="number" 
+            v-model="quantity" 
+            min="1" 
+            class="w-20 border border-gray-300 rounded-lg px-2" 
+          />
+        </div>
+
         <div class="mt-8 flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:space-x-4">
           <button 
             class="w-full lg:w-60 py-3 bg-black text-white rounded-lg shadow-lg transition-transform transform hover:scale-105"
@@ -42,11 +52,15 @@
   </div>
 </template>
 
+
+
+
 <script>
 export default {
   data() {
     return {
       loading: false,
+      quantity: 1, // Initialize quantity
       product: {
         title: "Nice flowers",
         Description: "Sergej delivery very fast",
@@ -56,17 +70,16 @@ export default {
           "https://th.bing.com/th/id/R.e5e1ee97efb60c85d7b8ee5a007183df?rik=BBHVxDKM6ojH5A&riu=http%3a%2f%2fhdwpro.com%2fwp-content%2fuploads%2f2016%2f02%2fCool-Pink-Flower-1620x1080.jpg&ehk=I1QYVm6SivG%2bcxjY%2fUhmQj0a6HFBuaDu4uC1dYsQEGM%3d&risl=&pid=ImgRaw&r=0",
           "https://th.bing.com/th/id/R.e5e1ee97efb60c85d7b8ee5a007183df?rik=BBHVxDKM6ojH5A&riu=http%3a%2f%2fhdwpro.com%2fwp-content%2fuploads%2f2016%2f02%2fCool-Pink-Flower-1620x1080.jpg&ehk=I1QYVm6SivG%2bcxjY%2fUhmQj0a6HFBuaDu4uC1dYsQEGM%3d&risl=&pid=ImgRaw&r=0",
         ],
-       
       },
     }; 
   },
 
   methods: {
     buyNow() {
-      alert('Redirecting to checkout...');
+      alert(`Redirecting to checkout for ${this.quantity} items...`);
     },
     addToCart() {
-      alert('Added to cart!');
+      alert(`Added ${this.quantity} items to cart!`);
     },
   },
   mounted() {
@@ -74,4 +87,3 @@ export default {
   },
 };
 </script>
-
