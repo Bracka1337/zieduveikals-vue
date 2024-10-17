@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <Navbar />
-    <v-main class="mt-[68px]">
+    <v-main class="bg-[#ffe7e7]">
       <router-view />
     </v-main>
     <Footer />
