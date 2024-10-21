@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-gray-200 w-full p-4 text-center">
+  <footer class="bg-white-200 w-full p-4 text-center">
     <nav class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
       <a class="text-lg">Piegade</a>
       <a class="text-lg">Katalogs</a>

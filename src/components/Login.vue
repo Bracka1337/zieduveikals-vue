@@ -1,20 +1,25 @@
 <template>
   <div class="login-form">
-    <h2 class="modal-title">Login</h2>
+    <h2 class="modal-title">Ieiet</h2>
     <form @submit.prevent="submitLogin">
       <div class="form-group">
-        <label for="email">E-pasts</label>
-        <input v-model="email" class="input-box" required type="email">
-        <div v-if="!isValidEmail(email) && email.length > 0" class="error-message">
-          Ievadiet derīgu e-pastu
-        </div>
+        <label for="username">Lietotājvārds</label>
+        <input v-model="username" class="input-box" required type="text">
       </div>
       <div class="form-group">
         <label for="password">Parole</label>
         <input v-model="password" class="input-box" required type="password">
       </div>
-      <button class="btn" type="submit">Ieiet</button>
+      <button class="btn" type="submit" :disabled="loading">
+        {{ loading ? 'Apstrāde...' : 'Ieiet' }}
+      </button>
     </form>
+    <div v-if="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+    <div v-if="successMessage" class="success-message">
+      {{ successMessage }}
+    </div>
   </div>
 </template>
 
@@ -22,17 +27,49 @@
 export default {
   data() {
     return {
-      email: '',
-      password: ''
+      username: '',
+      password: '',
+      loading: false,
+      errorMessage: '',
+      successMessage: ''
     };
   },
   methods: {
-    isValidEmail(email) {
-      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return re.test(email);
-    },
-    submitLogin() {
-      console.log('Logging in with', this.email, this.password);
+    async submitLogin() {
+      this.errorMessage = '';
+      this.successMessage = '';
+      this.loading = true;
+
+      const payload = {
+        username: this.username,
+        password: this.password
+      };
+
+      try {
+        const response = await fetch('https://ziedu-veikals.vercel.app/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          this.successMessage = 'Pieteikšanās veiksmīga!';
+          localStorage.setItem('access_token', data.access_token);
+          localStorage.setItem('refresh_token', data.refresh_token);
+          this.$router.push('/');
+        } else {
+          this.errorMessage = data.message || 'Pieteikšanās neizdevās.';
+        }
+      } catch (error) {
+        console.error('Kļūda pieteikšanās laikā:', error);
+        this.errorMessage = 'Kļūda savienojumā ar serveri.';
+      } finally {
+        this.loading = false;
+      }
     }
   }
 };
@@ -81,7 +118,12 @@ export default {
 .error-message {
   color: red;
   font-size: 0.9rem;
-  margin-top: -8px;
-  margin-bottom: 8px;
+  margin-top: 8px;
+}
+
+.success-message {
+  color: green;
+  font-size: 0.9rem;
+  margin-top: 8px;
 }
 </style>

@@ -23,6 +23,12 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l1.25-5H6.75M16 21a2 2 0 100-4 2 2 0 000 4zM8 21a2 2 0 100-4 2 2 0 000 4zM5 3h14l-1.25 5H6.25L5 3z" />
           </svg>
         </a>
+      
+        <a href="/Profile" class="text-gray-500 hover:text-black">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM12 14c-3.31 0-6 1.69-6 4v1h12v-1c0-2.31-2.69-4-6-4z" />
+          </svg>
+        </a>
 
         <button class="rounded-md p-2 w-20 bg-black text-white text-sm ieiet-button" @click="openLoginModal">Ieiet</button>
       </div>
