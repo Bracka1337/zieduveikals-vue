@@ -3,6 +3,10 @@
     <h2 class="modal-title">Reģistrēties</h2>
     <form @submit.prevent="submitRegister">
       <div class="form-group">
+        <label for="username">Lietotājvārds</label>
+        <input type="text" v-model="username" required class="input-box" />
+      </div>
+      <div class="form-group">
         <label for="email">E-pasts</label>
         <input type="email" v-model="email" required class="input-box" />
         <div v-if="!isValidEmail(email) && email.length > 0" class="error-message">
@@ -21,9 +25,15 @@
         </div>
       </div>
       <button type="submit" class="btn" :disabled="loading">
-        {{ loading ? 'Processing...' : 'Reģistrēties' }}
+        {{ loading ? 'Apstrāde...' : 'Reģistrēties' }}
       </button>
     </form>
+    <div v-if="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+    <div v-if="successMessage" class="success-message">
+      {{ successMessage }}
+    </div>
   </div>
 </template>
 
@@ -31,10 +41,13 @@
 export default {
   data() {
     return {
+      username: '',
       email: '',
       password: '',
       confirmPassword: '',
-      loading: false
+      loading: false,
+      errorMessage: '',
+      successMessage: ''
     };
   },
   methods: {
@@ -42,15 +55,49 @@ export default {
       const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return re.test(email);
     },
-    submitRegister() {
-      if (this.password === this.confirmPassword) {
-        this.loading = true;
-        setTimeout(() => {
-          console.log('Registering with', this.email, this.password);
-          this.loading = false;
-        }, 2000);
-      } else {
-        console.error('Passwords do not match');
+    async submitRegister() {
+      this.errorMessage = '';
+      this.successMessage = '';
+
+      if (this.password !== this.confirmPassword) {
+        this.errorMessage = 'Paroles nesakrīt';
+        return;
+      }
+
+      if (!this.isValidEmail(this.email)) {
+        this.errorMessage = 'Ievadiet derīgu e-pastu';
+        return;
+      }
+
+      this.loading = true;
+
+      const payload = {
+        username: this.username,
+        email: this.email,
+        password: this.password
+      };
+
+      try {
+        const response = await fetch('https://ziedu-veikals.vercel.app/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          this.successMessage = 'Reģistrācija veiksmīga!';
+        } else {
+          this.errorMessage = data.message || 'Reģistrācija neizdevās.';
+        }
+      } catch (error) {
+        console.error('Kļūda reģistrācijas laikā:', error);
+        this.errorMessage = 'Kļūda savienojumā ar serveri.';
+      } finally {
+        this.loading = false;
       }
     }
   }
@@ -98,6 +145,12 @@ export default {
 
 .error-message {
   color: red;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.success-message {
+  color: green;
   font-size: 0.9rem;
   margin-bottom: 8px;
 }
