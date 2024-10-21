@@ -59,7 +59,6 @@ export default {
 
 <style scoped>
 .register-form {
-  max-width: 400px;
   margin: auto;
   padding: 20px;
 }
