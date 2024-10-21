@@ -1,9 +1,7 @@
 <template>
   <div class="container mx-auto p-8">
     <h2 class="text-2xl font-bold mb-4">Grozs</h2>
-
     <div v-if="cartItems.length > 0">
-
       <div v-for="item in cartItems" :key="item.id" class="flex justify-between items-center border-b py-4">
         <div class="flex items-center space-x-4">
           <img :src="item.image" alt="product image" class="w-24 h-24 object-cover" />

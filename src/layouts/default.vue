@@ -5,6 +5,7 @@
       <router-view />
     </v-main>
     <Footer />
+    <SideCart />
 
   </v-app>
 </template>
