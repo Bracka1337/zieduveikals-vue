@@ -81,7 +81,6 @@ export default {
 .error-message {
   color: red;
   font-size: 0.9rem;
-  margin-top: -8px;
   margin-bottom: 8px;
 }
 </style>
