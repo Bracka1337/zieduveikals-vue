@@ -1,7 +1,7 @@
 <template>
-    <div class="px-[125px] mt-[50px]">
+    <div class="2xl:px-[300px] xl:px-[125px] lg:px-[100px] sm:px-[100px] px-[40px] mt-[50px] transition">
         <span class="text-4xl">Iemīļotākie produkti</span>
-        <div class="my-8 flex flex-row justify-around gap-4">
+        <div class="my-8 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 justify-around gap-4">
             <div v-for="(item, index) in items" :key="index" class="flex flex-col max-w-full w-full aspect-[4/4] hover:scale-110 transition">
                 <div class="max-w-full h-full" id="background">
                     <div class="text-xs w-fit text-white p-2 bg-[#399918]">-100%</div>
