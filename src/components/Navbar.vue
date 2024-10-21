@@ -6,7 +6,7 @@
       </div>
       <div class="hidden lg:flex absolute left-1/2 transform -translate-x-1/2">
         <div class="flex space-x-8">
-          <a href="/" class="text-lg">Produkti</a>
+          <a href="/catalog" class="text-lg">Produkti</a>
           <a href="/About" class="text-lg">Par mums</a>
         </div>
       </div>
