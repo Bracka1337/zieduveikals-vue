@@ -243,19 +243,19 @@ import axios from 'axios';
 
 interface ProductOption {
   description: string;
-  id?: number; // Optional for existing options
-  images: string[]; // Stores image URLs
+  id?: number; 
+  images: string[]; 
   name: string;
   type: 'COLOR' | 'SIZE' | 'MATERIAL' | 'DEFAULT';
-  price?: number; // Optional for non-default options
+  price?: number; 
   quantity: number;
   newImages?: File[]; 
-  uploadingImages?: boolean; // To track upload state
+  uploadingImages?: boolean; 
 }
 
 interface Product {
   discount?: number;
-  id?: number; // Made optional for new products
+  id?: number; 
   is_featured?: boolean | null;
   name: string;
   options: ProductOption[];
@@ -272,12 +272,12 @@ export default defineComponent({
     const filteredProducts = ref<Product[]>([]);
     const isModalOpen = ref(false);
     const isEditing = ref(false);
-    const isSaving = ref(false); // To track saving state
+    const isSaving = ref(false); 
     const selectedProduct = reactive<Product>({
       id: 0,
       name: '',
-      price: 0, // This will be deprecated in favor of default option's price
-      quantity: 0, // This will be deprecated in favor of default option's quantity
+      price: 0, 
+      quantity: 0, 
       type: 'BOUQUET',
       options: [],
       short_description: '',
@@ -293,10 +293,10 @@ export default defineComponent({
     
     const productForm = ref<InstanceType<typeof import('vue').ComponentPublicInstance>>();
 
-    // Replace with your actual JWT token or use environment variables
-    const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI4OTIxNTUzfQ.XGvf8hvOBcjTPcYQkYFXt64tITjixU0tucm7w0RjLnU';
+    
+    const AUTH_TOKEN = localStorage.getItem('access_token');
 
-    // Track options to delete when editing
+    
     const optionsToDelete = ref<number[]>([]);
 
     const fetchProducts = async () => {
@@ -350,7 +350,6 @@ export default defineComponent({
     const openEditProductModal = (product: Product) => {
       isEditing.value = true;
       Object.assign(selectedProduct, JSON.parse(JSON.stringify(product)));
-      // Reset optionsToDelete
       optionsToDelete.value = [];
       isModalOpen.value = true;
     };
@@ -360,8 +359,8 @@ export default defineComponent({
       Object.assign(selectedProduct, {
         id: 0,
         name: '',
-        price: 0, // Deprecated
-        quantity: 0, // Deprecated
+        price: 0, 
+        quantity: 0, 
         type: 'BOUQUET',
         options: [
           {
@@ -369,13 +368,13 @@ export default defineComponent({
             description: 'default',
             type: 'DEFAULT',
             images: [],
-            price: 0, // Required for default option
+            price: 0, 
             quantity: 0,
           }
         ],
         short_description: '',
       });
-      // Reset optionsToDelete
+      
       optionsToDelete.value = [];
       isModalOpen.value = true;
     };
@@ -384,12 +383,12 @@ export default defineComponent({
       if (productForm.value) {
         productForm.value.resetValidation();
       }
-      formValid.value = false; // Reset form validity
+      formValid.value = false; 
       Object.assign(selectedProduct, {
         id: 0,
         name: '',
-        price: 0, // Deprecated
-        quantity: 0, // Deprecated
+        price: 0, 
+        quantity: 0, 
         type: 'BOUQUET',
         options: [],
         short_description: '',
@@ -413,7 +412,6 @@ export default defineComponent({
     const removeOption = (index: number) => {
       const option = selectedProduct.options[index];
       if (option.id) {
-        // Mark for deletion
         optionsToDelete.value.push(option.id);
       }
       selectedProduct.options.splice(index, 1);
@@ -421,10 +419,9 @@ export default defineComponent({
 
     const handleOptionTypeChange = (option: ProductOption) => {
       if (option.type === 'DEFAULT') {
-        // Ensure only one default option
         selectedProduct.options.forEach((opt) => {
           if (opt !== option && opt.type === 'DEFAULT') {
-            opt.type = 'COLOR'; // Reset to a non-default type
+            opt.type = 'COLOR'; 
           }
         });
       }
@@ -432,7 +429,7 @@ export default defineComponent({
 
     const handleImageUpload = async (option: ProductOption) => {
       if (option.newImages && option.newImages.length > 0) {
-        option.uploadingImages = true; // Start loading
+        option.uploadingImages = true; 
 
         for (const file of option.newImages) {
           try {
@@ -445,7 +442,6 @@ export default defineComponent({
               },
             });
 
-            // Assuming the response has a structure similar to your curl example
             const { link } = uploadResponse.data;
 
             if (link) {
@@ -459,8 +455,8 @@ export default defineComponent({
           }
         }
 
-        option.newImages = []; // Clear the file input
-        option.uploadingImages = false; // Stop loading
+        option.newImages = []; 
+        option.uploadingImages = false; 
       }
     };
 
@@ -476,7 +472,6 @@ export default defineComponent({
         return;
       }
 
-      // Ensure that there's exactly one default option
       const defaultOptions = selectedProduct.options.filter(opt => opt.type === 'DEFAULT');
       if (defaultOptions.length !== 1) {
         showSnackbar('There must be exactly one default option.', 'error');
@@ -488,7 +483,6 @@ export default defineComponent({
       try {
         let response;
         if (isEditing.value) {
-          // Editing existing product
           response = await axios.patch(
             `https://ziedu-veikals.vercel.app/${selectedProduct.id}`,
             preparePatchData(),
@@ -500,20 +494,17 @@ export default defineComponent({
             }
           );
 
-          // Extract the product data from the response
           const updatedProduct: Product = response.data.product;
 
-          // Update the local products list
           const index = products.value.findIndex((p) => p.id === selectedProduct.id);
           if (index !== -1) {
             products.value[index] = updatedProduct;
-            handleSearch(); // Re-apply search to update filteredProducts
+            handleSearch(); 
             showSnackbar('Product updated successfully.', 'success');
           } else {
             throw new Error('Product not found in the local list.');
           }
         } else {
-          // Creating new product
           response = await axios.post(
             'https://ziedu-veikals.vercel.app/products',
             preparePostData(),
@@ -525,19 +516,17 @@ export default defineComponent({
             }
           );
 
-          // Extract the product data from the response
           const newProduct: Product = response.data.product;
 
-          // Ensure the response contains the necessary fields
           if (newProduct && newProduct.id) {
             products.value.push(newProduct);
-            handleSearch(); // Re-apply search to update filteredProducts
+            handleSearch();
             showSnackbar('Product added successfully.', 'success');
           } else {
             throw new Error('Incomplete product data received from server.');
           }
         }
-        closeModal(); // Close modal only after successful API call
+        closeModal(); 
       } catch (error) {
         console.error('Error saving product:', error);
         const errorMessage =
@@ -559,7 +548,7 @@ export default defineComponent({
           name: option.name,
           type: option.type,
           description: option.description,
-          images: option.images, // Contains image URLs
+          images: option.images, 
           price: option.type === 'DEFAULT' ? option.price : undefined,
           quantity: option.quantity,
         })),
@@ -576,11 +565,11 @@ export default defineComponent({
         is_featured: selectedProduct.is_featured,
         options_to_delete: optionsToDelete.value,
         options: selectedProduct.options.map((option) => ({
-          ...(option.id && { id: option.id }), // Include `id` if it exists
+          ...(option.id && { id: option.id }), 
           name: option.name,
           type: option.type,
           description: option.description,
-          images: option.images, // Contains image URLs
+          images: option.images, 
           price: option.type === 'DEFAULT' ? option.price : undefined,
           quantity: option.quantity,
         })),
@@ -607,12 +596,12 @@ export default defineComponent({
       snackbar.show = true;
     };
 
-    // Computed property to check if a default option exists
+    
     const hasDefaultOption = computed(() => {
       return selectedProduct.options.some(opt => opt.type === 'DEFAULT');
     });
 
-    // Function to check if a particular option type can be added
+    
     const canAddOptionType = (type: string) => {
       if (type === 'DEFAULT') {
         return !hasDefaultOption.value;
@@ -620,13 +609,13 @@ export default defineComponent({
       return true;
     };
 
-    // Watcher to enforce only one default option
+    
     watch(() => selectedProduct.options, (newOptions) => {
       const defaultOptions = newOptions.filter(opt => opt.type === 'DEFAULT');
       if (defaultOptions.length > 1) {
-        // Automatically reset the type of all but the first default option
+        
         defaultOptions.slice(1).forEach(opt => {
-          opt.type = 'COLOR'; // Reset to a non-default type
+          opt.type = 'COLOR'; 
         });
         showSnackbar('Only one default option is allowed per product.', 'error');
       }
@@ -659,7 +648,7 @@ export default defineComponent({
       removeImage,
       snackbar,
       showSnackbar,
-      isSaving, // Expose isSaving to the template
+      isSaving, 
       hasDefaultOption,
       canAddOptionType,
       handleOptionTypeChange,

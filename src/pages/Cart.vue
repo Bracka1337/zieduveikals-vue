@@ -96,10 +96,10 @@ export default {
             id: item.id,
             product_id: item.product_id,
             name: item.name,
-            price: item.price_per_unit * item.discount_factor,  // Handling price per unit and discounts
+            price: item.price_per_unit * item.discount_factor,  
             quantity: item.quantity,
-            line_total: item.line_total,  // Line total for computed total price
-            selected_option: item.selected_option,  // Selected option images, name, etc.
+            line_total: item.line_total, 
+            selected_option: item.selected_option,  
             short_description: item.short_description || '',
             image: item.selected_option.images[0] || 'https://via.placeholder.com/150',
           }));
@@ -137,40 +137,42 @@ export default {
       }
     },
     async updateQuantity(id, quantity, item) {
-      if (quantity < 1) {
-        this.errorMessage = 'Daudzumam jābūt vismaz 1.';
-        item.quantity = 1; 
-        return;
-      }
+  if (quantity < 1) {
+    this.errorMessage = 'Daudzumam jābūt vismaz 1.';
+    item.quantity = 1; 
+    return;
+  }
 
-      const accessToken = localStorage.getItem('access_token');
-      const previousQuantity = item.quantity;
+  const accessToken = localStorage.getItem('access_token');
+  const previousQuantity = item.quantity;
 
-      try {
-        const response = await fetch(`https://ziedu-veikals.vercel.app/cart/${id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({ quantity }),
-        });
+  try {
+    const response = await fetch(`https://ziedu-veikals.vercel.app/cart/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ quantity }),
+    });
 
-        if (response.ok) {
-          const data = await response.json();
-          this.errorMessage = '';
-        } else {
-          const errorData = await response.json();
-          this.errorMessage = errorData.message || 'Neizdevās atjaunināt preces daudzumu.';
-          item.quantity = errorData.max;
+    if (response.ok) {
+      const data = await response.json();
+      this.errorMessage = '';
+      
+      item.line_total = item.quantity * item.price;
+    } else {
+      const errorData = await response.json();
+      this.errorMessage = errorData.message || 'Neizdevās atjaunināt preces daudzumu.';
+      item.quantity = errorData.max; 
+    }
+  } catch (error) {
+    console.error('Kļūda, atjauninot preces daudzumu:', error);
+    this.errorMessage = 'Kļūda savienojumā ar serveri.';
+    item.quantity = previousQuantity; 
+  }
+},
 
-        }
-      } catch (error) {
-        console.error('Kļūda, atjauninot preces daudzumu:', error);
-        this.errorMessage = 'Kļūda savienojumā ar serveri.';
-        item.quantity = previousQuantity;
-      }
-    },
     checkout() {
       alert('Veiksmīgi pasūtījāt');
       this.cartItems = [];
