@@ -14,6 +14,7 @@ declare module 'vue' {
     Login: typeof import('./components/Login.vue')['default']
     Modal: typeof import('./components/Modal.vue')['default']
     Navbar: typeof import('./components/Navbar.vue')['default']
+    Product: typeof import('./components/Product.vue')['default']
     ProductGrid: typeof import('./components/ProductGrid.vue')['default']
     Register: typeof import('./components/Register.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

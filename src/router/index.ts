@@ -50,6 +50,17 @@ const router = createRouter({
       name: 'profile',
       component: () => import('../pages/Profile.vue'),
     },
+    {
+      path: '/',
+      component: () => import('../layouts/default.vue'),  // Use DefaultLayout for this route
+      children: [
+        {
+          path: '/product/:id',
+          name: 'product',
+          component: () => import('../pages/product.vue'),
+        }
+      ]
+    },
   ],
 })
 
