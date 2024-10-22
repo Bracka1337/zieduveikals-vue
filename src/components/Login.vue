@@ -59,7 +59,6 @@ export default {
         if (response.ok) {
           this.successMessage = 'Pieteikšanās veiksmīga!';
           localStorage.setItem('access_token', data.access_token);
-          localStorage.setItem('refresh_token', data.refresh_token);
           this.$router.push('/');
         } else {
           this.errorMessage = data.message || 'Pieteikšanās neizdevās.';

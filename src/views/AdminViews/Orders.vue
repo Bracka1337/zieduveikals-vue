@@ -237,7 +237,7 @@ export default defineComponent({
     const fetchOrders = async () => {
       loading.value = true;
       try {
-        const response = await axios.get('http://127.0.0.1:5000/orders', {
+        const response = await axios.get('http://https://ziedu-veikals.vercel.app/orders', {
           headers: {
             Authorization: AUTH_TOKEN,
           },

@@ -49,11 +49,15 @@
               <v-row>
                 <v-col>
                   <div class="text-caption font-weight-medium">Price</div>
-                  <div class="text-body-1">${{ product.price.toFixed(2) }}</div>
+                  <div class="text-body-1">
+                    ${{ getDefaultOption(product)?.price?.toFixed(2) || 'N/A' }}
+                  </div>
                 </v-col>
                 <v-col>
                   <div class="text-caption font-weight-medium">Inventory</div>
-                  <div class="text-body-1">{{ product.quantity }} in stock</div>
+                  <div class="text-body-1">
+                    {{ getDefaultOption(product)?.quantity || 'N/A' }} in stock
+                  </div>
                 </v-col>
               </v-row>
             </v-card-subtitle>
@@ -90,18 +94,9 @@
               required
             ></v-text-field>
             <v-text-field
-              label="Price"
-              v-model.number="selectedProduct.price"
-              type="number"
-              :rules="[v => v > 0 || 'Price must be positive']"
-              required
-            ></v-text-field>
-            <v-text-field
-              label="Quantity"
-              v-model.number="selectedProduct.quantity"
-              type="number"
-              :rules="[v => v >= 0 || 'Quantity cannot be negative']"
-              required
+              label="Short Description"
+              v-model="selectedProduct.short_description"
+              auto-grow
             ></v-text-field>
             <v-select
               label="Type"
@@ -110,17 +105,23 @@
               :rules="[v => !!v || 'Type is required']"
               required
             ></v-select>
-            <v-textarea
-              label="Short Description"
-              v-model="selectedProduct.short_description"
-              auto-grow
-            ></v-textarea>
+            <v-text-field
+              label="Discount (%)"
+              v-model.number="selectedProduct.discount"
+              type="number"
+              min="0"
+              max="100"
+            ></v-text-field>
+            <v-checkbox
+              label="Featured Product"
+              v-model="selectedProduct.is_featured"
+            ></v-checkbox>
 
             <!-- Options Section -->
             <v-divider class="my-4"></v-divider>
             <div class="d-flex justify-space-between align-center mb-2">
               <span class="font-weight-medium">Options</span>
-              <v-btn small color="primary" @click="addOption">
+              <v-btn small color="primary" @click="addOption" :disabled="hasDefaultOption && !canAddOptionType('DEFAULT')">
                 <v-icon left>mdi-plus</v-icon>
                 Add Option
               </v-btn>
@@ -150,7 +151,9 @@
                   v-model="option.type"
                   :items="optionTypes"
                   :rules="[v => !!v || 'Option type is required']"
+                  :disabled="option.type === 'DEFAULT' ? true : false"
                   required
+                  @change="handleOptionTypeChange(option)"
                 ></v-select>
                 <v-textarea
                   label="Description"
@@ -182,14 +185,39 @@
                 </v-row>
                 <!-- Loading Spinner for Image Upload -->
                 <v-progress-linear v-if="option.uploadingImages" indeterminate color="primary" class="mt-2"></v-progress-linear>
+                
+                <!-- Conditional Price Field for Default Option -->
+                <v-text-field
+                  v-if="option.type === 'DEFAULT'"
+                  label="Price"
+                  v-model.number="option.price"
+                  type="number"
+                  :rules="[v => v > 0 || 'Price must be positive']"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  v-else
+                  label="Price"
+                  v-model.number="option.price"
+                  type="number"
+                  min="0"
+                  :rules="[v => v >= 0 || 'Price cannot be negative']"
+                ></v-text-field>
+                <v-text-field
+                  label="Quantity"
+                  v-model.number="option.quantity"
+                  type="number"
+                  :rules="[v => v >= 0 || 'Quantity cannot be negative']"
+                  required
+                ></v-text-field>
               </v-card-text>
             </v-card>
           </v-form>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text @click="closeModal">Cancel</v-btn>
-          <v-btn color="primary" :disabled="!formValid || isSaving" @click="saveProduct">
+          <v-btn @click="closeModal">Cancel</v-btn>
+          <v-btn color="primary" :disabled="!formValid || isSaving || !hasDefaultOption" @click="saveProduct">
             <v-icon left v-if="isSaving">mdi-loading</v-icon>
             Save
           </v-btn>
@@ -210,7 +238,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, onMounted } from 'vue';
+import { defineComponent, ref, reactive, onMounted, computed, watch } from 'vue';
 import axios from 'axios';
 
 interface ProductOption {
@@ -219,6 +247,8 @@ interface ProductOption {
   images: string[]; // Stores image URLs
   name: string;
   type: 'COLOR' | 'SIZE' | 'MATERIAL' | 'DEFAULT';
+  price?: number; // Optional for non-default options
+  quantity: number;
   newImages?: File[]; 
   uploadingImages?: boolean; // To track upload state
 }
@@ -229,10 +259,8 @@ interface Product {
   is_featured?: boolean | null;
   name: string;
   options: ProductOption[];
-  price: number;
-  quantity: number;
-  short_description?: string;
   type: 'BOUQUET' | 'FLOWER'; 
+  short_description?: string;
 }
 
 export default defineComponent({
@@ -248,8 +276,8 @@ export default defineComponent({
     const selectedProduct = reactive<Product>({
       id: 0,
       name: '',
-      price: 0,
-      quantity: 0,
+      price: 0, // This will be deprecated in favor of default option's price
+      quantity: 0, // This will be deprecated in favor of default option's quantity
       type: 'BOUQUET',
       options: [],
       short_description: '',
@@ -268,9 +296,12 @@ export default defineComponent({
     // Replace with your actual JWT token or use environment variables
     const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI4OTIxNTUzfQ.XGvf8hvOBcjTPcYQkYFXt64tITjixU0tucm7w0RjLnU';
 
+    // Track options to delete when editing
+    const optionsToDelete = ref<number[]>([]);
+
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:5000/products', {
+        const response = await axios.get('https://ziedu-veikals.vercel.app/products', {
           headers: {
             Authorization: AUTH_TOKEN,
           },
@@ -302,7 +333,7 @@ export default defineComponent({
       if (!confirm('Are you sure you want to delete this product?')) return;
 
       try {
-        await axios.delete(`http://127.0.0.1:5000/product/${productId}`, {
+        await axios.delete(`https://ziedu-veikals.vercel.app/${productId}`, {
           headers: {
             Authorization: AUTH_TOKEN,
           },
@@ -318,8 +349,9 @@ export default defineComponent({
 
     const openEditProductModal = (product: Product) => {
       isEditing.value = true;
-      // Deep clone to prevent mutating the original product object
       Object.assign(selectedProduct, JSON.parse(JSON.stringify(product)));
+      // Reset optionsToDelete
+      optionsToDelete.value = [];
       isModalOpen.value = true;
     };
 
@@ -328,12 +360,23 @@ export default defineComponent({
       Object.assign(selectedProduct, {
         id: 0,
         name: '',
-        price: 0,
-        quantity: 0,
+        price: 0, // Deprecated
+        quantity: 0, // Deprecated
         type: 'BOUQUET',
-        options: [],
+        options: [
+          {
+            name: 'Default',
+            description: 'default',
+            type: 'DEFAULT',
+            images: [],
+            price: 0, // Required for default option
+            quantity: 0,
+          }
+        ],
         short_description: '',
       });
+      // Reset optionsToDelete
+      optionsToDelete.value = [];
       isModalOpen.value = true;
     };
 
@@ -345,12 +388,13 @@ export default defineComponent({
       Object.assign(selectedProduct, {
         id: 0,
         name: '',
-        price: 0,
-        quantity: 0,
+        price: 0, // Deprecated
+        quantity: 0, // Deprecated
         type: 'BOUQUET',
         options: [],
         short_description: '',
       });
+      optionsToDelete.value = [];
       isModalOpen.value = false;
     };
 
@@ -360,14 +404,29 @@ export default defineComponent({
         type: 'COLOR',
         description: '',
         images: [],
+        quantity: 0,
         newImages: [],
         uploadingImages: false,
       });
     };
 
     const removeOption = (index: number) => {
-      if (confirm('Are you sure you want to remove this option?')) {
-        selectedProduct.options.splice(index, 1);
+      const option = selectedProduct.options[index];
+      if (option.id) {
+        // Mark for deletion
+        optionsToDelete.value.push(option.id);
+      }
+      selectedProduct.options.splice(index, 1);
+    };
+
+    const handleOptionTypeChange = (option: ProductOption) => {
+      if (option.type === 'DEFAULT') {
+        // Ensure only one default option
+        selectedProduct.options.forEach((opt) => {
+          if (opt !== option && opt.type === 'DEFAULT') {
+            opt.type = 'COLOR'; // Reset to a non-default type
+          }
+        });
       }
     };
 
@@ -417,6 +476,13 @@ export default defineComponent({
         return;
       }
 
+      // Ensure that there's exactly one default option
+      const defaultOptions = selectedProduct.options.filter(opt => opt.type === 'DEFAULT');
+      if (defaultOptions.length !== 1) {
+        showSnackbar('There must be exactly one default option.', 'error');
+        return;
+      }
+
       isSaving.value = true;
 
       try {
@@ -424,7 +490,7 @@ export default defineComponent({
         if (isEditing.value) {
           // Editing existing product
           response = await axios.patch(
-            `http://127.0.0.1:5000/product/${selectedProduct.id}`,
+            `https://ziedu-veikals.vercel.app/${selectedProduct.id}`,
             preparePatchData(),
             {
               headers: {
@@ -449,7 +515,7 @@ export default defineComponent({
         } else {
           // Creating new product
           response = await axios.post(
-            'http://127.0.0.1:5000/products',
+            'https://ziedu-veikals.vercel.app/products',
             preparePostData(),
             {
               headers: {
@@ -485,56 +551,54 @@ export default defineComponent({
     const preparePostData = (): any => {
       const productData: any = {
         name: selectedProduct.name,
-        price: selectedProduct.price,
-        quantity: selectedProduct.quantity,
         type: selectedProduct.type,
         short_description: selectedProduct.short_description,
+        discount: selectedProduct.discount,
+        is_featured: selectedProduct.is_featured,
         options: selectedProduct.options.map((option) => ({
           name: option.name,
           type: option.type,
           description: option.description,
           images: option.images, // Contains image URLs
+          price: option.type === 'DEFAULT' ? option.price : undefined,
+          quantity: option.quantity,
         })),
       };
-      if (selectedProduct.discount !== undefined) {
-        productData.discount = selectedProduct.discount;
-      }
-      if (selectedProduct.is_featured !== undefined) {
-        productData.is_featured = selectedProduct.is_featured;
-      }
       return productData;
     };
 
     const preparePatchData = (): any => {
       const patchData: any = {
         name: selectedProduct.name,
-        price: selectedProduct.price,
-        quantity: selectedProduct.quantity,
         type: selectedProduct.type,
         short_description: selectedProduct.short_description,
+        discount: selectedProduct.discount,
+        is_featured: selectedProduct.is_featured,
+        options_to_delete: optionsToDelete.value,
         options: selectedProduct.options.map((option) => ({
           ...(option.id && { id: option.id }), // Include `id` if it exists
           name: option.name,
           type: option.type,
           description: option.description,
           images: option.images, // Contains image URLs
+          price: option.type === 'DEFAULT' ? option.price : undefined,
+          quantity: option.quantity,
         })),
       };
       
-      if (selectedProduct.discount !== undefined) {
-        patchData.discount = selectedProduct.discount;
-      }
-      if (selectedProduct.is_featured !== undefined) {
-        patchData.is_featured = selectedProduct.is_featured;
-      }
       return patchData;
     };
 
     const getProductImage = (product: Product): string => {
-      if (product.options.length > 0 && product.options[0].images.length > 0) {
-        return product.options[0].images[0];
+      const defaultOption = getDefaultOption(product);
+      if (defaultOption && defaultOption.images.length > 0) {
+        return defaultOption.images[0];
       }
       return 'https://via.placeholder.com/300x200?text=No+Image';
+    };
+
+    const getDefaultOption = (product: Product): ProductOption | undefined => {
+      return product.options.find(opt => opt.type === 'DEFAULT');
     };
 
     const showSnackbar = (message: string, color: string = 'success') => {
@@ -542,6 +606,31 @@ export default defineComponent({
       snackbar.color = color;
       snackbar.show = true;
     };
+
+    // Computed property to check if a default option exists
+    const hasDefaultOption = computed(() => {
+      return selectedProduct.options.some(opt => opt.type === 'DEFAULT');
+    });
+
+    // Function to check if a particular option type can be added
+    const canAddOptionType = (type: string) => {
+      if (type === 'DEFAULT') {
+        return !hasDefaultOption.value;
+      }
+      return true;
+    };
+
+    // Watcher to enforce only one default option
+    watch(() => selectedProduct.options, (newOptions) => {
+      const defaultOptions = newOptions.filter(opt => opt.type === 'DEFAULT');
+      if (defaultOptions.length > 1) {
+        // Automatically reset the type of all but the first default option
+        defaultOptions.slice(1).forEach(opt => {
+          opt.type = 'COLOR'; // Reset to a non-default type
+        });
+        showSnackbar('Only one default option is allowed per product.', 'error');
+      }
+    }, { deep: true });
 
     return {
       searchTerm,
@@ -564,12 +653,16 @@ export default defineComponent({
       preparePostData,
       preparePatchData,
       getProductImage,
+      getDefaultOption,
       productForm,
       handleImageUpload,
       removeImage,
       snackbar,
       showSnackbar,
       isSaving, // Expose isSaving to the template
+      hasDefaultOption,
+      canAddOptionType,
+      handleOptionTypeChange,
     };
   },
 });

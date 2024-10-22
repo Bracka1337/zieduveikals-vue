@@ -151,7 +151,7 @@
   
       const fetchPromocodes = async () => {
         try {
-          const response = await axios.get('http://127.0.0.1:5000/promocodes', {
+          const response = await axios.get('http://https://ziedu-veikals.vercel.app/promocodes', {
             headers: {
               Authorization: AUTH_TOKEN,
             },
@@ -183,7 +183,7 @@
         if (!confirm(`Are you sure you want to delete the promocode "${promocodeCode}"?`)) return;
   
         try {
-          await axios.delete(`http://127.0.0.1:5000/promocode/${encodeURIComponent(promocodeCode)}`, {
+          await axios.delete(`http://https://ziedu-veikals.vercel.app/promocode/${encodeURIComponent(promocodeCode)}`, {
             headers: {
               Authorization: AUTH_TOKEN,
             },
@@ -239,7 +239,7 @@
           if (isEditing.value) {
             // Editing existing promocode using the code as identifier
             response = await axios.patch(
-              `http://127.0.0.1:5000/promocode/${encodeURIComponent(selectedPromocode.code)}`,
+              `http://https://ziedu-veikals.vercel.app/promocode/${encodeURIComponent(selectedPromocode.code)}`,
               {
                 discount: selectedPromocode.discount,
                 count_usage: selectedPromocode.count_usage,
@@ -261,7 +261,7 @@
           } else {
             // Creating new promocode
             response = await axios.post(
-              'http://127.0.0.1:5000/promocodes',
+              'http://https://ziedu-veikals.vercel.app/promocodes',
               {
                 code: selectedPromocode.code,
                 discount: selectedPromocode.discount,

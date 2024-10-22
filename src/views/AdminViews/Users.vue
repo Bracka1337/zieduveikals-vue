@@ -180,7 +180,7 @@ export default defineComponent({
     // Fetch users from the backend
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:5000/get_users', {
+        const response = await axios.get('http://https://ziedu-veikals.vercel.app/get_users', {
           headers: {
             Authorization:
               'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI4OTI0NjQwfQ.G1VMpLDRnpSybt83pf3nyuU2NFfY_tLGykFJIv5R28U', // Replace with dynamic token management
@@ -197,7 +197,7 @@ export default defineComponent({
     // Fetch promocodes from the backend
     const fetchPromocodes = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:5000/get_promocodes', {
+        const response = await axios.get('http://https://ziedu-veikals.vercel.app/get_promocodes', {
           headers: {
             Authorization:
               'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI4OTI0NjQwfQ.G1VMpLDRnpSybt83pf3nyuU2NFfY_tLGykFJIv5R28U', // Replace with dynamic token management
@@ -252,7 +252,7 @@ export default defineComponent({
         };
 
         const response = await axios.patch(
-          `http://127.0.0.1:5000/user/${editFormData.id}`,
+          `http://https://ziedu-veikals.vercel.app/user/${editFormData.id}`,
           payload,
           {
             headers: {
