@@ -1,181 +1,157 @@
-<template> 
-  <div class="profile-page">
-    <h2 class="profile-title">Profils</h2>
-
-    <div class="profile-content">
-      <div class="profile-info">
-        <p><strong>E-pasts:</strong> {{ email }}</p>
-      </div>
-
-      <div class="password-section">
-        <button @click="togglePasswordFields" class="btn">
-          {{ showPasswordFields ? 'Atcelt' : 'Mainīt paroli' }}
-        </button>
-
-        <div v-if="showPasswordFields" class="password-fields">
-          <div class="form-group">
-            <label for="currentPassword">Pašreizējā parole:</label>
-            <input
-              v-model="currentPassword"
-              type="password"
-              class="input-box"
-              placeholder="Pašreizējā parole"
-            />
+<template>
+  <div class="container mx-auto p-4 space-y-6">
+    <!-- Profile Section -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <div class="p-6">
+        <h2 class="text-2xl font-bold mb-2">Profile</h2>
+        <p class="text-gray-600 mb-4">Manage your account and view your order history</p>
+        <div class="flex flex-col sm:flex-row items-center gap-4">
+          <div class="space-y-1 text-center sm:text-left">
+            <h2 class="text-2xl font-bold">{{ user?.username }}</h2>
+            <p class="text-gray-600">{{ user?.email }}</p>
           </div>
-          <div class="form-group">
-            <label for="newPassword">Jaunā parole:</label>
-            <input
-              v-model="newPassword"
-              type="password"
-              class="input-box"
-              placeholder="Jaunā parole"
-            />
-          </div>
-          <div class="form-group">
-            <label for="confirmNewPassword">Apstiprināt jauno paroli:</label>
-            <input
-              v-model="confirmNewPassword"
-              type="password"
-              class="input-box"
-              placeholder="Apstiprināt jauno paroli"
-            />
-            <div
-              v-if="newPassword !== confirmNewPassword && confirmNewPassword.length > 0"
-              class="error-message"
-            >
-              Paroles nesakrīt
-            </div>
-          </div>
-          <button
-            @click="changePassword"
-            class="btn"
-            :disabled="newPassword !== confirmNewPassword"
-          >
-            Saglabāt paroli
+        </div>
+        <div class="flex justify-end mt-4 space-x-2">
+          <button @click="openChangePasswordDialog" class="px-4 py-2 bg-white text-gray-800 rounded border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition">
+            Change Password
+          </button>
+          <button @click="logout" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition">
+            Logout
           </button>
         </div>
       </div>
-      
-      <div class="orders-section">
-        <h3>Mani pasūtījumi</h3>
-        <ul> 
-          <li>Pasūtījums #12345 - Rozes - $40</li> 
-          <li>Pasūtījums #12346 - Tulpes - $35</li>
-        </ul>
+    </div>
+
+    
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <div class="p-6">
+        <h2 class="text-2xl font-bold mb-2">Previous Orders</h2>
+        <p class="text-gray-600 mb-4">Your order history</p>
+        <div class="space-y-4">
+          <div v-for="order in orders" :key="order.id" class="flex items-center justify-between border-b pb-4 last:border-b-0">
+            <div class="flex items-center space-x-4">
+              <div class="p-2 bg-primary-100 rounded-full">
+                <img :src="order.items[0].product_photo" class="w-6 h-6 rounded-full" alt="Product Image"/>
+              </div>
+              <div>
+                <p class="font-medium">{{ order.id }}</p>
+                <p class="text-sm text-gray-500" v-for="item in order.items">{{ item.product_name }} x {{ item.quantity }} ({{ item.quantity * item.price }})</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-4">
+              <span :class="['px-2 py-1 text-xs font-semibold rounded-full', order.status === 'Delivered' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800']">
+                {{ order.status }}
+              </span>
+                <p class="font-medium">{{ order.items.reduce((total, item) => total + (item.quantity * item.price), 0) }}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+    
+    
+    <teleport to="body">
+      <div v-if="isChangePasswordDialogOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+          <h3 class="text-lg font-semibold mb-4">Change Password</h3>
+          <div class="space-y-4">
+            <div>
+              <label for="current" class="block text-sm font-medium text-gray-700">Current Password</label>
+              <input id="current" type="password" v-model="currentPassword" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" />
+            </div>
+            <div>
+              <label for="new" class="block text-sm font-medium text-gray-700">New Password</label>
+              <input id="new" type="password" v-model="newPassword" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" />
+            </div>
+            <div>
+              <label for="confirm" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
+              <input id="confirm" type="password" v-model="confirmPassword" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm" />
+            </div>
+          </div>
+          <div class="mt-6 flex justify-end space-x-3">
+            <button @click="closeChangePasswordDialog" class="px-4 py-2 bg-white text-gray-800 rounded border border-gray-300 hover:bg-gray-100">
+              Cancel
+            </button>
+            <button @click="changePassword" class="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700" :disabled="!isPasswordValid">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </teleport>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      email: '', /* backend ?!?! */
-      currentPassword: '',
-      newPassword: '',
-      confirmNewPassword: '',
-      showPasswordFields: false,
-    };
-  },
-  methods: {
-    togglePasswordFields() {
-      this.showPasswordFields = !this.showPasswordFields;
-    },
-    changePassword() {
-      if (this.newPassword === this.confirmNewPassword) {
-        console.log('Mainot paroli uz:', this.newPassword);
-        this.showPasswordFields = false;
-        /* Logic */
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+
+const user = ref(null)
+const orders = ref([])
+const isChangePasswordDialogOpen = ref(false)
+const currentPassword = ref('')
+const newPassword = ref('')
+const confirmPassword = ref('')
+
+const isPasswordValid = computed(() => {
+  return newPassword.value && newPassword.value === confirmPassword.value
+})
+
+const fetchUserData = async () => {
+  const token = localStorage.getItem('access_token')
+
+  if (!token) {
+    console.error('No token found')
+    return
+  }
+
+  try {
+    const response = await fetch('https://ziedu-veikals.vercel.app/orders', {
+      headers: {
+        'Authorization': `Bearer ${token}`
       }
-    },
-  },
-};
+    })
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch data')
+    }
+
+
+    const data = await response.json()
+    orders.value = data.orders
+    user.value = orders.value[0].user
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+}
+
+onMounted(() => {
+  fetchUserData()
+})
+
+const openChangePasswordDialog = () => {
+  isChangePasswordDialogOpen.value = true
+}
+
+const closeChangePasswordDialog = () => {
+  isChangePasswordDialogOpen.value = false
+  currentPassword.value = ''
+  newPassword.value = ''
+  confirmPassword.value = ''
+}
+
+const changePassword = () => {
+  if (isPasswordValid.value) {
+    console.log('Changing password...')
+    closeChangePasswordDialog()
+  } else {
+    alert("Passwords do not match.")
+  }
+}
+
+const logout = () => {
+  localStorage.clear('access_token');
+  location.reload();
+}
 </script>
 
-<style scoped>
-.profile-page {
-  max-width: 800px;
-  margin: auto;
-  padding: 40px 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-top: 100px; 
-}
 
-.profile-title {
-  font-size: 2rem;
-  text-align: center;
-  margin-bottom: 1rem;
-  color: #333;
-}
-
-.profile-content {
-  display: flex; 
-  justify-content: space-between; 
-  gap: 20px; 
-  flex-wrap: wrap; 
-}
-
-.profile-info,
-.password-section,
-.orders-section {
-  flex: 1; 
-  padding: 15px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  background-color: #fff;
-  min-width: 250px; 
-}
-
-.profile-info p {
-  margin: 0;
-}
-
-.password-fields {
-  margin-top: 10px; 
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
-}
-
-.input-box {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  margin-top: 5px;
-}
-
-.btn {
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
-  margin-top: 10px;
-  border-radius: 4px;
-  font-weight: bold;
-  width: 100%;
-  transition: background-color 0.3s;
-}
-
-.btn:hover {
-  background-color: #0056b3;
-}
-
-.error-message {
-  color: red;
-  font-size: 0.9rem;
-  margin-top: 5px;
-}
-
-h3 {
-  margin-bottom: 1rem;
-  color: #007bff;
-}
-</style>

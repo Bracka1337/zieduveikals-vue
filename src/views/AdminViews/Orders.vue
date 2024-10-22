@@ -213,12 +213,11 @@ export default defineComponent({
     const sentinel = ref<HTMLElement | null>(null);
     const drawer = ref(false);
 
-    // Date Filters
+    
     const startDate = ref<string>('');
     const endDate = ref<string>('');
-
-    // Replace with your actual Bearer token retrieval logic
-    const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI4OTI0NzM0fQ.-vo6xnRxUdZuZo6BV2kEPxycFqol-2nyV1_I7eJZH-A';
+    
+    const AUTH_TOKEN = localStorage.getItem('access_token');
 
     const headers = [
       { text: 'Order ID', value: 'id' },
@@ -265,7 +264,7 @@ export default defineComponent({
         if (displayedOrders.value.length < filteredOrders.value.length) {
           initObserver();
         }
-      }, 500); // Simulate network delay
+      }, 500); 
     };
 
     const handleIntersect = (entries: IntersectionObserverEntry[]) => {
@@ -349,13 +348,13 @@ export default defineComponent({
     };
 
     const exportToExcel = () => {
-      // Prepare data for Excel
+      
       const data: any[] = [];
 
       filteredOrders.value.forEach(order => {
-        // Calculate total order amount
+        
         const totalOrderAmount = calculateTotalOrderAmount(order);
-        // For each item in the order, create a row
+        
         order.items.forEach((item, index) => {
           data.push({
             'Order ID': index === 0 ? order.id : '',
@@ -369,7 +368,7 @@ export default defineComponent({
             'Total Price': (item.price * item.quantity).toFixed(2),
           });
         });
-        // Add a summary row for the order total
+        
         data.push({
           'Order ID': '',
           'Status': '',
@@ -381,16 +380,16 @@ export default defineComponent({
           'Price per Item': 'Total Order Amount:',
           'Total Price': totalOrderAmount.toFixed(2),
         });
-        // Add an empty row for separation
+        
         data.push({});
       });
 
-      // Create worksheet and workbook
+      
       const worksheet = XLSX.utils.json_to_sheet(data);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Orders');
 
-      // Save to file
+      
       XLSX.writeFile(workbook, 'orders.xlsx');
     };
 

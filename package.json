@@ -14,6 +14,7 @@
     "axios": "^1.7.7",
     "core-js": "^3.37.1",
     "lodash": "^4.17.21",
+    "lucide-vue-next": "^0.453.0",
     "roboto-fontface": "*",
     "vue": "^3.4.31",
     "vuetify": "^3.6.11",

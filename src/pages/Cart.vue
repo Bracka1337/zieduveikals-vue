@@ -9,10 +9,11 @@
         class="flex justify-between items-center border-b py-4"
       >
         <div class="flex items-center space-x-4">
-          <img :src="item.image" alt="product image" class="w-24 h-24 object-cover" />
+          <img :src="item.selected_option.images[0]" alt="product image" class="w-24 h-24 object-cover" />
           <div class="text-left">
             <p class="font-bold">{{ item.name }}</p>
-            <p class="text-sm text-gray-500">{{ item.price }} $ </p>
+            <p class="text-sm text-gray-500">{{ item.price.toFixed(2) }} $ </p>
+            <p class="text-xs text-gray-400">{{ item.selected_option.name }}</p>
           </div>
         </div>
 
@@ -53,6 +54,7 @@
   </div>
 </template>
 
+
 <script>
 export default {
   data() {
@@ -64,7 +66,7 @@ export default {
   },
   computed: {
     totalPrice() {
-      return this.cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+      return this.cartItems.reduce((total, item) => total + item.line_total, 0);
     },
   },
   methods: {
@@ -94,9 +96,12 @@ export default {
             id: item.id,
             product_id: item.product_id,
             name: item.name,
-            price: item.price,
+            price: item.price_per_unit * item.discount_factor,  
             quantity: item.quantity,
-            image: item.image || 'https://via.placeholder.com/150', 
+            line_total: item.line_total, 
+            selected_option: item.selected_option,  
+            short_description: item.short_description || '',
+            image: item.selected_option.images[0] || 'https://via.placeholder.com/150',
           }));
         } else {
           const errorData = await response.json();
@@ -132,39 +137,42 @@ export default {
       }
     },
     async updateQuantity(id, quantity, item) {
-      if (quantity < 1) {
-        this.errorMessage = 'Daudzumam jābūt vismaz 1.';
-        item.quantity = 1; 
-        return;
-      }
+  if (quantity < 1) {
+    this.errorMessage = 'Daudzumam jābūt vismaz 1.';
+    item.quantity = 1; 
+    return;
+  }
 
-      const accessToken = localStorage.getItem('access_token');
-      const previousQuantity = item.quantity;
+  const accessToken = localStorage.getItem('access_token');
+  const previousQuantity = item.quantity;
 
-      try {
-        const response = await fetch(`https://ziedu-veikals.vercel.app/cart/${id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({ quantity }),
-        });
+  try {
+    const response = await fetch(`https://ziedu-veikals.vercel.app/cart/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ quantity }),
+    });
 
-        if (response.ok) {
-          const data = await response.json();
-          this.errorMessage = '';
-        } else {
-          const errorData = await response.json();
-          this.errorMessage = errorData.message || 'Neizdevās atjaunināt preces daudzumu.';
-          item.quantity = previousQuantity;
-        }
-      } catch (error) {
-        console.error('Kļūda, atjauninot preces daudzumu:', error);
-        this.errorMessage = 'Kļūda savienojumā ar serveri.';
-        item.quantity = previousQuantity;
-      }
-    },
+    if (response.ok) {
+      const data = await response.json();
+      this.errorMessage = '';
+      
+      item.line_total = item.quantity * item.price;
+    } else {
+      const errorData = await response.json();
+      this.errorMessage = errorData.message || 'Neizdevās atjaunināt preces daudzumu.';
+      item.quantity = errorData.max; 
+    }
+  } catch (error) {
+    console.error('Kļūda, atjauninot preces daudzumu:', error);
+    this.errorMessage = 'Kļūda savienojumā ar serveri.';
+    item.quantity = previousQuantity; 
+  }
+},
+
     checkout() {
       alert('Veiksmīgi pasūtījāt');
       this.cartItems = [];

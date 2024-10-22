@@ -47,7 +47,7 @@ export default {
       try {
         const response = await fetch('https://ziedu-veikals.vercel.app/get_users', {
           headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJxcXJnIiwiZXhwIjoxNzI3MTc2NzI3fQ.EO0VjutgwSMoinQNFSvzjsKpNPrc78T911TpIUrtiCA'
+            'Authorization': localStorage.getItem('access_token')
           }
         });
         const data = await response.json();
@@ -69,7 +69,7 @@ export default {
       try {
         const response = await fetch('https://ziedu-veikals.vercel.app/orders', {
           headers: {
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJxcXJnIiwiZXhwIjoxNzI3MTc2NzI3fQ.EO0VjutgwSMoinQNFSvzjsKpNPrc78T911TpIUrtiCA'
+            'Authorization': localStorage.getItem('access_token')
           }
         });
         const data = await response.json();
