@@ -4,7 +4,7 @@
         <div class="my-8 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 justify-around gap-4">
             <div v-for="(product, index) in data.products" :key="index">
               <router-link :to="{ name: 'product', params: { id: product.id } }" class="flex flex-col max-w-full w-full aspect-[4/4] hover:scale-110 transition">
-                <div class="max-w-full h-full" :style="{ backgroundImage: 'url(' + product.options[0].images[0] + ')' }" id="background">
+                <div class="max-w-full h-full shadow-lg" :style="{ backgroundImage: 'url(' + product.options[0].images[0] + ')' }" id="background">
                     <div v-if="product.discount" class="text-xs w-fit text-white p-2 bg-[#399918]">-{{ product.discount }}%</div>
                 </div>
                 <div class="mt-2">
@@ -36,11 +36,10 @@ export default {
   },
   methods: {
     async getProducts() {
-      // Check if we have cached data
       const cachedData = this.getCachedProducts();
       if (cachedData) {
         this.data = cachedData;
-        return; // Exit the method if cached data is used
+        return;
       }
 
       this.Loading = true;
