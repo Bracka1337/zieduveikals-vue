@@ -36,9 +36,45 @@
   export default {
     data () {
       return {
-        items: Array.from({ length: 10 }),
+        items: Array.from({ length: 4 }),
+        data: null,
+        Loading: false,
       }
     },
+    methods: {
+      async getProducts() {
+        this.Loading = true;
+        
+        const params = {
+          limit: 10
+        };
+
+        try {
+          const qs = new URLSearchParams(params).toString();
+          const response = await fetch(`https://ziedu-veikals.vercel.app/products?${qs}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+          });
+          const data = await response.json();
+          if (response.ok) {
+            console.log("success");
+            console.log(data);
+            this.data = data;
+          } else {
+            console.log("Failure");
+          }
+        } catch (error) {
+          console.error('Couldn\'t get products', error);
+        } finally {
+          this.loading = false;
+        }
+      }
+    },
+    mounted() {
+      this.getProducts();
+    }
   }
 </script>
 
