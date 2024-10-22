@@ -118,7 +118,7 @@ const fetchUserData = async () => {
 
     const data = await response.json()
     orders.value = data.orders
-    user.value = orders.value[0].user
+    user.value = data.user
   } catch (error) {
     console.error('Error fetching data:', error)
   }
