@@ -1,11 +1,10 @@
 <template>
-  <div class="my-10 w-full flex items-center justify-center ">
-    <div class="w-full max-w-md px-6 py-8 bg-white rounded-lg shadow-xl">
+  <div class="my-10 w-full flex items-center justify-center">
+    <div class="w-full max-w-md px-6 py-8 rounded-lg ">
 
       <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">
         {{ isLoginMode ? 'Ieiet' : 'Reģistrēties' }}
       </h2>
-
 
       <form @submit.prevent="isLoginMode ? submitLogin() : submitRegister()" class="space-y-4">
 
@@ -16,12 +15,10 @@
             v-model="username"
             type="text"
             required
-            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
-                   focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            class="mt-1 block w-full px-3 py-2 bg-white border border-black rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
             placeholder="Ievadiet savu lietotājvārdu"
           />
         </div>
-
 
         <div v-if="!isLoginMode">
           <label for="email" class="block text-sm font-medium text-gray-700">E-pasts</label>
@@ -30,15 +27,13 @@
             v-model="email"
             type="email"
             required
-            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
-                   focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            class="mt-1 block w-full px-3 py-2 bg-white border border-black rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
             placeholder="Ievadiet savu e-pastu"
           />
           <p v-if="!isValidEmail(email) && email.length > 0" class="mt-1 text-sm text-red-600">
             Ievadiet derīgu e-pastu
           </p>
         </div>
-
 
         <div>
           <label for="password" class="block text-sm font-medium text-gray-700">Parole</label>
@@ -47,8 +42,7 @@
             v-model="password"
             type="password"
             required
-            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
-                   focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            class="mt-1 block w-full px-3 py-2 bg-white border border-black rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
             placeholder="Ievadiet savu paroli"
           />
         </div>
@@ -61,8 +55,7 @@
             v-model="confirmPassword"
             type="password"
             required
-            class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400
-                   focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            class="mt-1 block w-full px-3 py-2 bg-white border border-black rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
             placeholder="Atkārtoti ievadiet savu paroli"
           />
           <p v-if="password !== confirmPassword && confirmPassword.length > 0" class="mt-1 text-sm text-red-600">
@@ -70,12 +63,11 @@
           </p>
         </div>
 
-
         <div>
           <button
             type="submit"
             :disabled="loading || (!isLoginMode && !isFormValid)"
-            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-full flex justify-center py-2 px-4 bg-[#399918] border-black rounded-md shadow-sm text-sm font-medium text-white"
           >
             <svg v-if="loading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -86,7 +78,6 @@
         </div>
       </form>
 
-
       <div v-if="errorMessage" class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
         <span class="block sm:inline">{{ errorMessage }}</span>
       </div>
@@ -94,9 +85,8 @@
         <span class="block sm:inline">{{ successMessage }}</span>
       </div>
 
-
       <div class="text-center mt-4">
-        <button @click="toggleMode" class="text-sm text-indigo-600 hover:underline">
+        <button @click="toggleMode" class="text-sm text-black hover:underline">
           {{ isLoginMode ? 'Nav konta? Reģistrējieties' : 'Jums jau ir konts? Ieiet' }}
         </button>
       </div>

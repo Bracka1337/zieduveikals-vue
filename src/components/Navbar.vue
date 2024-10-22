@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-white w-full">
+  <header class="bg-[#ffe7e7] w-full">
     <nav aria-label="Global" class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
       <div class="flex lg:flex-1">
         <a href="/" class="text-2xl">Ziedi.lv</a>
@@ -27,7 +27,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM12 14c-3.31 0-6 1.69-6 4v1h12v-1c0-2.31-2.69-4-6-4z" />
           </svg>
         </a>
-        <a href="/Login" class="rounded-md p-2 w-20 bg-black text-white text-center text-xm">Ieiet</a>
+        <a href="/Login" class="rounded-md p-2 w-20 bg-[#399918] text-white text-center text-xm">Ieiet</a>
       </div>
       <div class="lg:hidden flex items-center space-x-4">
         <!-- Иконки для мобильной версии -->

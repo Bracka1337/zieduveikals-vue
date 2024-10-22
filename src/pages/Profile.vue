@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <!-- Orders Section -->
+    
     <div class="bg-white shadow rounded-lg overflow-hidden">
       <div class="p-6">
         <h2 class="text-2xl font-bold mb-2">Previous Orders</h2>
@@ -49,7 +49,7 @@
       </div>
     </div>
     
-    <!-- Change Password Dialog -->
+    
     <teleport to="body">
       <div v-if="isChangePasswordDialogOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
@@ -154,6 +154,4 @@ const logout = () => {
 }
 </script>
 
-<style scoped>
-/* Add any additional styles here */
-</style>
+
