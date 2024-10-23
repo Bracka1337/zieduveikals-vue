@@ -39,7 +39,7 @@
 
         <div class="mt-8 flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:space-x-4">
           <button
-            class="w-full lg:w-60 py-3 bg-black text-white rounded-lg shadow-lg transition-transform transform hover:scale-105"
+            class="w-full lg:w-60 py-3 bg-[#ffc2c2] text-white rounded-lg shadow-lg transition-transform transform hover:scale-105"
             @click="buyNow"
           >
             Buy Now

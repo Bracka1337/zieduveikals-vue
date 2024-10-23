@@ -12,7 +12,7 @@
         >
       </div>
       <div class="mt-6">
-        <button class="w-full py-2 px-4 bg-green-500 text-white font-bold rounded hover:bg-green-600 transition" @click="performSearch">
+        <button class="w-full py-2 px-4 bg-[#ffc2c2] text-white font-bold rounded hover:bg-[#ffc2c2] transition" @click="performSearch">
           Meklēt
         </button>
       </div>
@@ -28,7 +28,7 @@
             <div v-if="product.discount" class="text-xs w-fit text-white p-2 bg-[#399918]">-{{ product.discount }}%</div>
           </div>
           <div class="mt-2">
-            <button class="box-border py-2 px-4 w-full bg-[#fff] hover:bg-[#4be15c] shadow-lg transition">Pievienot grozam</button>
+            <button class="box-border py-2 px-4 w-full bg-[#fff] hover:bg-[#ffc2c2] shadow-lg transition">Pievienot grozam</button>
             <div class="p-2">
               <p class="font-bold">{{ product.name }}</p>
               <p class="text-slate-500 text-sm">{{ product.short_description }}</p>
