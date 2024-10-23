@@ -24,124 +24,122 @@
             <v-list-item-title>Navigation Item</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-
       </v-list>
     </v-navigation-drawer>
 
-
     <v-container fluid>
       <v-card>
+        <v-card-title>
+          <v-row align="center">
+            <v-col cols="8">
+              <v-toolbar-title>Order List</v-toolbar-title>
+            </v-col>
+            <v-col cols="4" class="text-right">
+              <v-btn color="primary" @click="exportToExcel">
+                Export to Excel
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-card-title>
         <v-data-table
           :headers="headers"
           :items="displayedOrders"
           :search="searchTerm"
-          class="elevation-1"
-          :items-per-page="batchSize"
           :loading="loading"
           loading-text="Loading orders..."
-          hide-default-footer
-          show-expand
-          :expanded.sync="expanded"
+          class="elevation-1"
         >
-          <template v-slot:top>
-            <v-toolbar flat>
-              <v-toolbar-title>Order List</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-text-field
-                v-model="startDate"
-                label="Start Date"
-                type="date"
-                @change="handleDateFilter"
-                class="mx-2"
-                outlined
-                dense
-              ></v-text-field>
-              <v-text-field
-                v-model="endDate"
-                label="End Date"
-                type="date"
-                @change="handleDateFilter"
-                class="mx-2"
-                outlined
-                dense
-              ></v-text-field>
-              <v-btn color="primary" @click="exportToExcel" class="ml-2">
-                Export to Excel
-              </v-btn>
-            </v-toolbar>
-          </template>
-
- 
-          <template v-slot:item="{ item, toggleExpand, isExpanded }">
+          <template v-slot:item="{ item }">
             <tr>
               <td>{{ item.id }}</td>
-              <td>{{ item.status }}</td>
+              <td>
+                <v-chip :color="getStatusColor(item.status)" small>
+                  {{ item.status }}
+                </v-chip>
+              </td>
               <td>{{ formatDate(item.created_at) }}</td>
               <td>{{ item.user.username }}</td>
               <td>
-                <v-btn icon small @click="toggleExpand(item)" aria-label="Expand or collapse order details">
-                  <v-icon>{{ isExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                <v-btn
+                  color="primary"
+                  small
+                  @click="openOrderDetails(item)"
+                >
+                  View Details
                 </v-btn>
               </td>
             </tr>
-          </template>
-
-
-          <template v-slot:expanded-item="{ item }">
-            <v-card flat>
-              <v-card-text>
-                <v-row>
-                  <v-col cols="12" md="6">
-                    <h3>Order Details</h3>
-                    <p><strong>Order ID:</strong> {{ item.id }}</p>
-                    <p><strong>Status:</strong> {{ item.status }}</p>
-                    <p><strong>Created At:</strong> {{ formatDate(item.created_at) }}</p>
-                    <p v-if="item.promocode"><strong>Promocode:</strong> {{ item.promocode.code }} ({{ item.promocode.discount }}%)</p>
-                  </v-col>
-                  <v-col cols="12" md="6">
-                    <h3>User Information</h3>
-                    <p><strong>User ID:</strong> {{ item.user.id }}</p>
-                    <p><strong>Username:</strong> {{ item.user.username }}</p>
-                    <p><strong>Email:</strong> {{ item.user.email }}</p>
-                    <p><strong>Role:</strong> {{ item.user.role }}</p>
-                  </v-col>
-                </v-row>
-                <v-divider class="my-4"></v-divider>
-                <h3>Items</h3>
-                <v-simple-table>
-                  <thead>
-                    <tr>
-                      <th class="text-left">Product</th>
-                      <th class="text-left">Description</th>
-                      <th class="text-left">Quantity</th>
-                      <th class="text-left">Price</th>
-                      <th class="text-left">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="itemDetail in item.items" :key="itemDetail.id">
-                      <td>{{ itemDetail.product_name }}</td>
-                      <td>{{ itemDetail.product_description || 'N/A' }}</td>
-                      <td>{{ itemDetail.quantity }}</td>
-                      <td>${{ itemDetail.price.toFixed(2) }}</td>
-                      <td>${{ (itemDetail.price * itemDetail.quantity).toFixed(2) }}</td>
-                    </tr>
-                  </tbody>
-                </v-simple-table>
-                <v-divider class="my-4"></v-divider>
-                <h3>Total Order Amount: ${{ calculateTotalOrderAmount(item).toFixed(2) }}</h3>
-              </v-card-text>
-            </v-card>
           </template>
         </v-data-table>
       </v-card>
     </v-container>
 
+    <v-dialog v-model="orderDetailsDialog" max-width="800px">
+      <v-card v-if="selectedOrder">
+        <v-card-title class="pb-4">
+          <span class="headline">Order Details</span>
+        </v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col cols="12" sm="6">
+              <p><strong>Order ID:</strong> {{ selectedOrder.id }}</p>
+              <p><strong>Status:</strong> {{ selectedOrder.status }}</p>
+              <p><strong>Created At:</strong> {{ formatDate(selectedOrder.created_at) }}</p>
+              <p><strong>Address:</strong> {{ selectedOrder.address }}</p>
+              <p><strong>Phone Number:</strong> {{ selectedOrder.phone_number }}</p>
+            </v-col>
+            <v-col cols="12" sm="6">
+              <p><strong>User:</strong> {{ selectedOrder.user.username }}</p>
+              <p><strong>Email:</strong> {{ selectedOrder.user.email }}</p>
+              <p><strong>Role:</strong> {{ selectedOrder.user.role }}</p>
+            </v-col>
+          </v-row>
+          <v-divider class="my-4"></v-divider>
+          <h3>Order Items</h3>
+          <v-simple-table>
+            <template v-slot:default>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Description</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in selectedOrder.items" :key="item.id">
+                  <td>{{ item.product_name }}</td>
+                  <td>{{ item.product_description }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>${{ item.price.toFixed(2) }}</td>
+                  <td>${{ (item.quantity * item.price).toFixed(2) }}</td>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+          <v-divider class="my-4"></v-divider>
+          <p class="text-h6"><strong>Total Order Amount:</strong> ${{ calculateTotalOrderAmount(selectedOrder).toFixed(2) }}</p>
+          <p v-if="selectedOrder.promocode">
+            <strong>Promocode:</strong> {{ selectedOrder.promocode.code }} ({{ selectedOrder.promocode.discount }}% discount)
+          </p>
+          <p v-else><strong>Promocode:</strong> No promocode used</p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="orderDetailsDialog = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <div ref="sentinel"></div>
 
-    <v-progress-linear v-if="isLoadingMore" indeterminate color="primary" class="mt-2"></v-progress-linear>
-
+    <v-progress-linear
+      v-if="isLoadingMore"
+      indeterminate
+      color="primary"
+      class="mt-2"
+    ></v-progress-linear>
 
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
       {{ snackbar.message }}
@@ -185,12 +183,14 @@ interface OrderItem {
 }
 
 interface Order {
-  id: number;
+  id: string;
   status: string;
   created_at: string;
   user: User;
   promocode: Promocode | null;
   items: OrderItem[];
+  address: string;
+  phone_number: string;
 }
 
 export default defineComponent({
@@ -208,14 +208,14 @@ export default defineComponent({
       color: 'success',
     });
     const expanded = ref<string[]>([]);
+
     const sentinel = ref<HTMLElement | null>(null);
     const drawer = ref(false);
 
-    
     const startDate = ref<string>('');
     const endDate = ref<string>('');
-    
-    const AUTH_TOKEN = "Bearer " + localStorage.getItem('access_token');
+
+    const AUTH_TOKEN = 'Bearer ' + localStorage.getItem('access_token');
 
     const headers = [
       { text: 'Order ID', value: 'id' },
@@ -239,7 +239,12 @@ export default defineComponent({
             Authorization: AUTH_TOKEN,
           },
         });
-        orders.value = response.data.orders;
+
+        orders.value = response.data.orders.map((order: any) => ({
+          ...order,
+          id: order.id.toString(),
+        }));
+
         filteredOrders.value = [...orders.value];
         displayedOrders.value = filteredOrders.value.slice(0, batchSize.value);
         initObserver();
@@ -262,7 +267,7 @@ export default defineComponent({
         if (displayedOrders.value.length < filteredOrders.value.length) {
           initObserver();
         }
-      }, 500); 
+      }, 500);
     };
 
     const handleIntersect = (entries: IntersectionObserverEntry[]) => {
@@ -309,7 +314,10 @@ export default defineComponent({
     const filterOrders = () => {
       let term = searchTerm.value.trim().toLowerCase();
       filteredOrders.value = orders.value.filter((order) => {
-        const matchesSearch = term === '' || order.id.toString().includes(term) || order.user.username.toLowerCase().includes(term);
+        const matchesSearch =
+          term === '' ||
+          order.id.toString().includes(term) ||
+          order.user.username.toLowerCase().includes(term);
         const orderDate = new Date(order.created_at);
         const start = startDate.value ? new Date(startDate.value) : null;
         const end = endDate.value ? new Date(endDate.value) : null;
@@ -346,49 +354,67 @@ export default defineComponent({
     };
 
     const exportToExcel = () => {
-      
       const data: any[] = [];
 
-      filteredOrders.value.forEach(order => {
-        
+      filteredOrders.value.forEach((order) => {
         const totalOrderAmount = calculateTotalOrderAmount(order);
-        
+
         order.items.forEach((item, index) => {
           data.push({
             'Order ID': index === 0 ? order.id : '',
-            'Status': index === 0 ? order.status : '',
+            Status: index === 0 ? order.status : '',
             'Created At': index === 0 ? formatDate(order.created_at) : '',
-            'User': index === 0 ? order.user.username : '',
-            'Product': item.product_name,
-            'Description': item.product_description || 'N/A',
-            'Quantity': item.quantity,
+            User: index === 0 ? order.user.username : '',
+            Product: item.product_name,
+            Description: item.product_description || 'N/A',
+            Quantity: item.quantity,
             'Price per Item': item.price.toFixed(2),
             'Total Price': (item.price * item.quantity).toFixed(2),
           });
         });
-        
+
         data.push({
           'Order ID': '',
-          'Status': '',
+          Status: '',
           'Created At': '',
-          'User': '',
-          'Product': '',
-          'Description': '',
-          'Quantity': '',
+          User: '',
+          Product: '',
+          Description: '',
+          Quantity: '',
           'Price per Item': 'Total Order Amount:',
           'Total Price': totalOrderAmount.toFixed(2),
         });
-        
+
         data.push({});
       });
 
-      
       const worksheet = XLSX.utils.json_to_sheet(data);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Orders');
 
-      
       XLSX.writeFile(workbook, 'orders.xlsx');
+    };
+
+
+    const selectedOrder = ref(null);
+    const orderDetailsDialog = ref(false);
+
+    const openOrderDetails = (order) => {
+      selectedOrder.value = order;
+      orderDetailsDialog.value = true;
+    };
+
+    const getStatusColor = (status) => {
+      switch (status) {
+        case 'PENDING':
+          return 'warning';
+        case 'COMPLETED':
+          return 'success';
+        case 'CANCELLED':
+          return 'error';
+        default:
+          return 'primary';
+      }
     };
 
     return {
@@ -413,37 +439,26 @@ export default defineComponent({
       endDate,
       exportToExcel,
       calculateTotalOrderAmount,
-      toggleExpand: (order: Order) => {
-        const orderIdStr = order.id.toString();
-        const index = expanded.value.indexOf(orderIdStr);
-        if (index === -1) {
-          expanded.value.push(orderIdStr);
-        } else {
-          expanded.value.splice(index, 1);
-        }
-      },
-      isExpanded: (order: Order): boolean => {
-        return expanded.value.includes(order.id.toString());
-      },
+      selectedOrder,
+      orderDetailsDialog,
+      openOrderDetails,
+      getStatusColor,
     };
   },
 });
 </script>
 
 <style scoped>
-/* Ensure the data table occupies full width */
 .v-data-table {
   width: 100%;
 }
 
-/* Styling for Order Cards */
 .order-card {
   width: 100%;
-  margin: 0 auto 16px auto; /* Center the card and add bottom margin */
+  margin: 0 auto 16px auto; 
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Compact the card title layout */
 .order-card-title {
   display: flex;
   justify-content: space-between;
@@ -451,24 +466,20 @@ export default defineComponent({
   padding: 16px;
 }
 
-/* Reduce padding inside the card text */
 .v-card-text {
   padding: 16px;
 }
 
-/* Ensure table cells allow text to wrap */
 .v-simple-table th,
 .v-simple-table td {
   white-space: normal;
   word-wrap: break-word;
 }
 
-/* Adjust the size of the expand/collapse button */
 .v-btn[icon] {
   padding: 4px;
 }
 
-/* Responsive Adjustments */
 @media (max-width: 600px) {
   .order-card-title {
     flex-direction: column;
@@ -480,8 +491,7 @@ export default defineComponent({
   }
 }
 
-/* Remove padding from sentinel element */
-div[ref="sentinel"] {
+div[ref='sentinel'] {
   height: 1px;
 }
 </style>
