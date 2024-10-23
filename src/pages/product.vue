@@ -1,89 +1,103 @@
 <template>
   <div class="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
-    <div v-if="loading" class="text-center">
+    <!-- <div v-if="loading" class="text-center">
       <p>Loading product details...</p>
     </div>
     <div v-else class="flex flex-col lg:flex-row items-start lg:space-x-8 space-y-8 lg:space-y-0">
-      
+
       <div class="w-full lg:w-1/2">
-        <img :src="product.mainImage" alt="Product Image" class="w-full h-auto object-cover rounded-lg"/>
+        <img alt="Product Image" class="w-full h-auto object-cover rounded-lg" :src="product.mainImage">
         <div class="mt-4 flex overflow-x-auto space-x-2">
-          <img 
-            v-for="(image, index) in product.gallery" 
-            :key="index" 
-            :src="image" 
-            alt="Gallery Image" 
-            class="w-20 h-20 object-cover flex-shrink-0 rounded-lg border border-gray-300 transition-transform transform hover:scale-105">
+          <img
+            v-for="(image, index) in product.gallery"
+            :key="index"
+            alt="Gallery Image"
+            class="w-20 h-20 object-cover flex-shrink-0 rounded-lg border border-gray-300 transition-transform transform hover:scale-105"
+            :src="image"
+          >
         </div>
       </div>
 
       <div class="w-full lg:w-1/2">
         <h1 class="text-3xl font-bold text-gray-900">{{ product.title }}</h1>
         <p class="mt-2 text-gray-600">{{ product.Description }}</p>
-        
+
         <div class="mt-4">
           <span class="text-2xl font-semibold text-gray-900">${{ product.price }}</span>
         </div>
 
         <div class="mt-4 flex items-center">
-          <label for="quantity" class="mr-2">Quantity:</label>
-          <input 
-            type="number" 
-            v-model="quantity" 
-            min="1" 
-            class="w-20 border border-gray-300 rounded-lg px-2" 
-          />
+          <label class="mr-2" for="quantity">Quantity:</label>
+          <input
+            v-model="quantity"
+            class="w-20 border border-gray-300 rounded-lg px-2"
+            min="1"
+            type="number"
+          >
         </div>
 
         <div class="mt-8 flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:space-x-4">
-          <button 
+          <button
             class="w-full lg:w-60 py-3 bg-black text-white rounded-lg shadow-lg transition-transform transform hover:scale-105"
-            @click="buyNow">
+            @click="buyNow"
+          >
             Buy Now
           </button>
-          <button 
+          <button
             class="w-full lg:w-60 py-3 bg-white text-black rounded-lg shadow-lg transition-transform transform hover:scale-105"
-            @click="addToCart">
+            @click="addToCart"
+          >
             Add to Cart
           </button>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
-
-
-
 <script>
-export default {
-  data() {
-    return {
-      loading: false,
-      quantity: 1, // Initialize quantity
-      product: {
-        title: "Nice flowers",
-        Description: "Sergej delivery very fast",
-        price: 10,
-        mainImage: "https://th.bing.com/th/id/R.e5e1ee97efb60c85d7b8ee5a007183df?rik=BBHVxDKM6ojH5A&riu=http%3a%2f%2fhdwpro.com%2fwp-content%2fuploads%2f2016%2f02%2fCool-Pink-Flower-1620x1080.jpg&ehk=I1QYVm6SivG%2bcxjY%2fUhmQj0a6HFBuaDu4uC1dYsQEGM%3d&risl=&pid=ImgRaw&r=0",
-        gallery: [
-          "https://th.bing.com/th/id/R.e5e1ee97efb60c85d7b8ee5a007183df?rik=BBHVxDKM6ojH5A&riu=http%3a%2f%2fhdwpro.com%2fwp-content%2fuploads%2f2016%2f02%2fCool-Pink-Flower-1620x1080.jpg&ehk=I1QYVm6SivG%2bcxjY%2fUhmQj0a6HFBuaDu4uC1dYsQEGM%3d&risl=&pid=ImgRaw&r=0",
-          "https://th.bing.com/th/id/R.e5e1ee97efb60c85d7b8ee5a007183df?rik=BBHVxDKM6ojH5A&riu=http%3a%2f%2fhdwpro.com%2fwp-content%2fuploads%2f2016%2f02%2fCool-Pink-Flower-1620x1080.jpg&ehk=I1QYVm6SivG%2bcxjY%2fUhmQj0a6HFBuaDu4uC1dYsQEGM%3d&risl=&pid=ImgRaw&r=0",
-        ],
-      },
-    }; 
-  },
+  export default {
+    data () {
+      return {
+        loading: false,
+        quantity: 1, // Initialize quantity
+        data: [],
+      }
+    },
+    mounted () {
+      this.loading = false
+      this.getProduct()
+    },
 
-  methods: {
-    buyNow() {
-      alert(`Redirecting to checkout for ${this.quantity} items...`);
+    methods: {
+      buyNow () {
+        alert(`Redirecting to checkout for ${this.quantity} items...`)
+      },
+      addToCart () {
+        alert(`Added ${this.quantity} items to cart!`)
+      },
+      async getProduct () {
+        try {
+          const response = await fetch(`https://ziedu-veikals.vercel.app/product/${this.$route.params.id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+          const data = await response.json()
+
+          if (response.ok) {
+            this.data = data
+            console.log(data)
+          } else {
+            console.log('Failure')
+          }
+        } catch (error) {
+          console.error("Couldn't get featured products", error)
+        } finally {
+          this.Loading = false
+        }
+      },
     },
-    addToCart() {
-      alert(`Added ${this.quantity} items to cart!`);
-    },
-  },
-  mounted() {
-    this.loading = false; 
-  },
-};
+  }
 </script>
