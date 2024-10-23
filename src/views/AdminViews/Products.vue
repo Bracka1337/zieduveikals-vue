@@ -121,7 +121,7 @@
             <v-divider class="my-4"></v-divider>
             <div class="d-flex justify-space-between align-center mb-2">
               <span class="font-weight-medium">Options</span>
-              <v-btn small color="primary" @click="addOption" :disabled="hasDefaultOption && !canAddOptionType('DEFAULT')">
+              <v-btn small color="primary" @click="addOption">
                 <v-icon left>mdi-plus</v-icon>
                 Add Option
               </v-btn>
@@ -135,8 +135,19 @@
               <v-card-title>
                 <span>Option {{ index + 1 }}</span>
                 <v-spacer></v-spacer>
-                <v-btn icon @click="removeOption(index)">
-                  <v-icon color="error">mdi-delete</v-icon>
+                <!-- 
+                  Delete Button:
+                  - Disabled if the option is the default option.
+                  - Provides visual feedback by changing the icon color.
+                -->
+                <v-btn
+                  icon
+                  @click="removeOption(index)"
+                  :disabled="option.type === 'DEFAULT'"
+                >
+                  <v-icon :color="option.type === 'DEFAULT' ? 'grey' : 'error'">
+                    mdi-delete
+                  </v-icon>
                 </v-btn>
               </v-card-title>
               <v-card-text>
@@ -151,7 +162,6 @@
                   v-model="option.type"
                   :items="optionTypes"
                   :rules="[v => !!v || 'Option type is required']"
-                  :disabled="option.type === 'DEFAULT' ? true : false"
                   required
                   @change="handleOptionTypeChange(option)"
                 ></v-select>
@@ -178,30 +188,31 @@
                     class="d-flex justify-center align-center"
                   >
                     <v-img :src="img" height="100px" class="mr-2"></v-img>
-                    <v-btn icon color="error" @click="removeImage(option, imgIndex)">
+                    <v-btn
+                      v-if="option.type !== 'DEFAULT'"
+                      icon
+                      color="error"
+                      @click="removeImage(option, imgIndex)"
+                    >
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
                   </v-col>
                 </v-row>
                 <!-- Loading Spinner for Image Upload -->
-                <v-progress-linear v-if="option.uploadingImages" indeterminate color="primary" class="mt-2"></v-progress-linear>
+                <v-progress-linear
+                  v-if="option.uploadingImages"
+                  indeterminate
+                  color="primary"
+                  class="mt-2"
+                ></v-progress-linear>
                 
-                <!-- Conditional Price Field for Default Option -->
+                <!-- Always Include Price and Quantity -->
                 <v-text-field
-                  v-if="option.type === 'DEFAULT'"
                   label="Price"
                   v-model.number="option.price"
                   type="number"
-                  :rules="[v => v > 0 || 'Price must be positive']"
+                  :rules="[v => (option.type === 'DEFAULT' ? (v > 0 || 'Price must be positive') : (v >= 0 || 'Price cannot be negative'))]"
                   required
-                ></v-text-field>
-                <v-text-field
-                  v-else
-                  label="Price"
-                  v-model.number="option.price"
-                  type="number"
-                  min="0"
-                  :rules="[v => v >= 0 || 'Price cannot be negative']"
                 ></v-text-field>
                 <v-text-field
                   label="Quantity"
@@ -217,7 +228,11 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn @click="closeModal">Cancel</v-btn>
-          <v-btn color="primary" :disabled="!formValid || isSaving || !hasDefaultOption" @click="saveProduct">
+          <v-btn
+            color="primary"
+            :disabled="!formValid || isSaving || !hasDefaultOption"
+            @click="saveProduct"
+          >
             <v-icon left v-if="isSaving">mdi-loading</v-icon>
             Save
           </v-btn>
@@ -276,10 +291,8 @@ export default defineComponent({
     const selectedProduct = reactive<Product>({
       id: 0,
       name: '',
-      price: 0, 
-      quantity: 0, 
-      type: 'BOUQUET',
       options: [],
+      type: 'BOUQUET',
       short_description: '',
     });
     const productTypes = ['BOUQUET', 'FLOWER']; 
@@ -294,7 +307,7 @@ export default defineComponent({
     const productForm = ref<InstanceType<typeof import('vue').ComponentPublicInstance>>();
 
     
-    const AUTH_TOKEN = "Bearer" + localStorage.getItem('access_token');
+    const AUTH_TOKEN = "Bearer " + localStorage.getItem('access_token');
 
     
     const optionsToDelete = ref<number[]>([]);
@@ -333,7 +346,7 @@ export default defineComponent({
       if (!confirm('Are you sure you want to delete this product?')) return;
 
       try {
-        await axios.delete(`https://ziedu-veikals.vercel.app/${productId}`, {
+        await axios.delete(`https://ziedu-veikals.vercel.app/product/${productId}`, {
           headers: {
             Authorization: AUTH_TOKEN,
           },
@@ -349,6 +362,7 @@ export default defineComponent({
 
     const openEditProductModal = (product: Product) => {
       isEditing.value = true;
+      // Deep clone the product to avoid mutating the original data before saving
       Object.assign(selectedProduct, JSON.parse(JSON.stringify(product)));
       optionsToDelete.value = [];
       isModalOpen.value = true;
@@ -359,13 +373,11 @@ export default defineComponent({
       Object.assign(selectedProduct, {
         id: 0,
         name: '',
-        price: 0, 
-        quantity: 0, 
         type: 'BOUQUET',
         options: [
           {
-            name: 'Default',
-            description: 'default',
+            name: '',
+            description: '',
             type: 'DEFAULT',
             images: [],
             price: 0, 
@@ -373,6 +385,8 @@ export default defineComponent({
           }
         ],
         short_description: '',
+        discount: 0,
+        is_featured: false,
       });
       
       optionsToDelete.value = [];
@@ -387,11 +401,11 @@ export default defineComponent({
       Object.assign(selectedProduct, {
         id: 0,
         name: '',
-        price: 0, 
-        quantity: 0, 
         type: 'BOUQUET',
         options: [],
         short_description: '',
+        discount: 0,
+        is_featured: false,
       });
       optionsToDelete.value = [];
       isModalOpen.value = false;
@@ -411,6 +425,13 @@ export default defineComponent({
 
     const removeOption = (index: number) => {
       const option = selectedProduct.options[index];
+      
+      // Prevent deletion of the default option
+      if (option.type === 'DEFAULT') {
+        showSnackbar('Cannot delete the default option.', 'error');
+        return;
+      }
+
       if (option.id) {
         optionsToDelete.value.push(option.id);
       }
@@ -478,13 +499,16 @@ export default defineComponent({
         return;
       }
 
+      // Optional: Debugging - Log selectedProduct before saving
+      console.log('Selected Product Before Save:', JSON.stringify(selectedProduct, null, 2));
+
       isSaving.value = true;
 
       try {
         let response;
         if (isEditing.value) {
           response = await axios.patch(
-            `https://ziedu-veikals.vercel.app/${selectedProduct.id}`,
+            `https://ziedu-veikals.vercel.app/product/${selectedProduct.id}`,
             preparePatchData(),
             {
               headers: {
@@ -549,8 +573,8 @@ export default defineComponent({
           type: option.type,
           description: option.description,
           images: option.images, 
-          price: option.type === 'DEFAULT' ? option.price : undefined,
-          quantity: option.quantity,
+          price: option.price, // Always include price
+          quantity: option.quantity, // Always include quantity
         })),
       };
       return productData;
@@ -570,8 +594,8 @@ export default defineComponent({
           type: option.type,
           description: option.description,
           images: option.images, 
-          price: option.type === 'DEFAULT' ? option.price : undefined,
-          quantity: option.quantity,
+          price: option.price, // Always include price
+          quantity: option.quantity, // Always include quantity
         })),
       };
       
