@@ -215,7 +215,7 @@ export default defineComponent({
     const startDate = ref<string>('');
     const endDate = ref<string>('');
     
-    const AUTH_TOKEN = "Bearer" + localStorage.getItem('access_token');
+    const AUTH_TOKEN = "Bearer " + localStorage.getItem('access_token');
 
     const headers = [
       { text: 'Order ID', value: 'id' },

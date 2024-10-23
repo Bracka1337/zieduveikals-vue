@@ -62,7 +62,7 @@
               </v-row>
             </v-card-subtitle>
             <v-card-actions>
-              <v-btn color="secondary" @click="openEditDialog(user)">
+              <v-btn color="primary" @click="openEditDialog(user)">
                 <v-icon left>mdi-pencil</v-icon>
                 Edit
               </v-btn>
