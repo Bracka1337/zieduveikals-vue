@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-[#ffe7e7] w-full">
+  <header class="bg-[#FFF9F9] w-full">
     <nav aria-label="Global" class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
       <div class="flex lg:flex-1">
         <a class="text-2xl" href="/">Ziedi.lv</a>
