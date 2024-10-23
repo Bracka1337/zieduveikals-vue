@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-[300px] flex align-center justify-center" id="background">
+  <div id="background" class="w-full h-[300px] flex align-center justify-center">
     <div class="text-[4vw] xl:text-[3vw] text-white transition-all">Labākie un dabiskākie ziedi Latvijā</div>
   </div>
 </template>

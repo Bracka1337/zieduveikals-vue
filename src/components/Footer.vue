@@ -4,11 +4,11 @@
       <a class="text-lg">Piegade</a>
       <a class="text-lg">Katalogs</a>
       <a class="text-lg">Kontaktinformācija</a>
-      <a href="#" class="text-xs">Piegades sīkumi</a>
-      <a href="#" class="text-xs">Lābākie piedāvājumi</a>
+      <a class="text-xs" href="#">Piegades sīkumi</a>
+      <a class="text-xs" href="#">Lābākie piedāvājumi</a>
       <a class="text-xs">+371 29930395</a>
     </nav>
-    
+
     <div>
       <p class="text-2xl">Ziedi.lv © 2024</p>
     </div>

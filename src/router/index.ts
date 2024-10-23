@@ -52,14 +52,14 @@ const router = createRouter({
     },
     {
       path: '/',
-      component: () => import('../layouts/default.vue'),  // Use DefaultLayout for this route
+      component: () => import('../layouts/default.vue'), // Use DefaultLayout for this route
       children: [
         {
           path: '/product/:id',
           name: 'product',
           component: () => import('../pages/product.vue'),
-        }
-      ]
+        },
+      ],
     },
   ],
 })
