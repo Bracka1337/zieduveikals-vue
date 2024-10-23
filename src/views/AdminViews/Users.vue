@@ -15,12 +15,7 @@
         outlined
         dense
       />
-      <v-col class="d-flex" cols="auto">
-        <v-btn color="primary" @click="addUser">
-          <v-icon left>mdi-plus</v-icon>
-          Add User
-        </v-btn>
-      </v-col>
+
     </v-app-bar>
 
     <!-- Navigation Drawer (Optional) -->
@@ -122,7 +117,7 @@
     <!-- Snackbar for Feedback Messages -->
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
       {{ snackbar.message }}
-      <v-btn text @click="snackbar.show = false">Close</v-btn>
+
     </v-snackbar>
   </v-main>
 </template>
@@ -205,8 +200,8 @@ export default defineComponent({
         });
         promocodes.value = response.data.promocodes;
       } catch (error) {
-        console.error('Error loading promocodes:', error);
-        showSnackbar('Error loading promocodes', 'error');
+        console.error('Error loading users:', error);
+        showSnackbar('Error loading users', 'error');
       }
     };
 
