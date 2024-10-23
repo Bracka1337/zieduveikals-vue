@@ -217,7 +217,7 @@ export default defineComponent({
     const startDate = ref<string>('');
     const endDate = ref<string>('');
     
-    const AUTH_TOKEN = localStorage.getItem('access_token');
+    const AUTH_TOKEN = "Bearer" + localStorage.getItem('access_token');
 
     const headers = [
       { text: 'Order ID', value: 'id' },
@@ -236,7 +236,7 @@ export default defineComponent({
     const fetchOrders = async () => {
       loading.value = true;
       try {
-        const response = await axios.get('http://127.0.0.1:5000/orders', {
+        const response = await axios.get('https://ziedu-veikals.vercel.app/orders', {
           headers: {
             Authorization: AUTH_TOKEN,
           },

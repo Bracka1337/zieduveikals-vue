@@ -43,7 +43,7 @@ export default {
       try {
         const response = await fetch('https://ziedu-veikals.vercel.app/get_users', {
           headers: {
-            'Authorization': localStorage.getItem('access_token')
+            'Authorization': "Bearer" + localStorage.getItem('access_token')
           }
         });
         const data = await response.json();
@@ -65,7 +65,7 @@ export default {
       try {
         const response = await fetch('https://ziedu-veikals.vercel.app/orders', {
           headers: {
-            'Authorization': localStorage.getItem('access_token')
+            'Authorization': "Bearer" + localStorage.getItem('access_token')
           }
         });
         const data = await response.json();

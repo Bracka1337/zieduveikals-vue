@@ -158,7 +158,7 @@ export default defineComponent({
       promocode_id: null as number | null,
     });
     const formValid = ref(false);
-    const roles = ['ADMIN', 'USER', 'MODERATOR']; 
+    const roles = ['ADMIN', 'USER']; 
     const promocodes = ref<Promocode[]>([]);
 
     const snackbar = reactive({
@@ -168,7 +168,7 @@ export default defineComponent({
     });
 
 
-    const AUTH_TOKEN = localStorage.getItem('access_token');
+    const AUTH_TOKEN = "Bearer " + localStorage.getItem('access_token');
 
     
     const handleSearchDebounced = debounce(() => {
@@ -178,7 +178,7 @@ export default defineComponent({
     
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://https://ziedu-veikals.vercel.app/get_users', {
+        const response = await axios.get('https://ziedu-veikals.vercel.app/get_users', {
           headers: {
             Authorization:
             AUTH_TOKEN, 
@@ -195,7 +195,7 @@ export default defineComponent({
     
     const fetchPromocodes = async () => {
       try {
-        const response = await axios.get('http://https://ziedu-veikals.vercel.app/get_promocodes', {
+        const response = await axios.get('https://ziedu-veikals.vercel.app/get_promocodes', {
           headers: {
             Authorization:
             AUTH_TOKEN, 
@@ -250,7 +250,7 @@ export default defineComponent({
         };
 
         const response = await axios.patch(
-          `http://https://ziedu-veikals.vercel.app/user/${editFormData.id}`,
+          `https://ziedu-veikals.vercel.app/user/${editFormData.id}`,
           payload,
           {
             headers: {

@@ -147,7 +147,7 @@
       const promocodeForm = ref<InstanceType<typeof import('vue').ComponentPublicInstance>>();
   
       
-      const AUTH_TOKEN = localStorage.getItem('access_token');
+      const AUTH_TOKEN = "Bearer" + localStorage.getItem('access_token');
   
       const fetchPromocodes = async () => {
         try {
@@ -183,7 +183,7 @@
         if (!confirm(`Are you sure you want to delete the promocode "${promocodeCode}"?`)) return;
   
         try {
-          await axios.delete(`http://https://ziedu-veikals.vercel.app/promocode/${encodeURIComponent(promocodeCode)}`, {
+          await axios.delete(`https://ziedu-veikals.vercel.app/promocode/${encodeURIComponent(promocodeCode)}`, {
             headers: {
               Authorization: AUTH_TOKEN,
             },
@@ -239,7 +239,7 @@
           if (isEditing.value) {
             
             response = await axios.patch(
-              `http://https://ziedu-veikals.vercel.app/promocode/${encodeURIComponent(selectedPromocode.code)}`,
+              `https://ziedu-veikals.vercel.app/promocode/${encodeURIComponent(selectedPromocode.code)}`,
               {
                 discount: selectedPromocode.discount,
                 count_usage: selectedPromocode.count_usage,
@@ -261,7 +261,7 @@
           } else {
             
             response = await axios.post(
-              'http://https://ziedu-veikals.vercel.app/promocodes',
+              'https://ziedu-veikals.vercel.app/promocodes',
               {
                 code: selectedPromocode.code,
                 discount: selectedPromocode.discount,

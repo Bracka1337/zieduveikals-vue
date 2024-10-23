@@ -71,7 +71,6 @@ export default {
       if (token) {
         try {
           const response = await fetch('https://ziedu-veikals.vercel.app/is_admin', {
-            method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json',

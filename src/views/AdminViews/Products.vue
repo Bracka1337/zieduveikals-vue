@@ -294,7 +294,7 @@ export default defineComponent({
     const productForm = ref<InstanceType<typeof import('vue').ComponentPublicInstance>>();
 
     
-    const AUTH_TOKEN = localStorage.getItem('access_token');
+    const AUTH_TOKEN = "Bearer" + localStorage.getItem('access_token');
 
     
     const optionsToDelete = ref<number[]>([]);
