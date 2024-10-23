@@ -25,7 +25,7 @@
       <div v-for="(product, index) in data.products" :key="index">
         <router-link class="flex flex-col max-w-full w-full aspect-[4/4] hover:scale-110 transition" :to="{ name: 'product', params: { id: product.id } }">
           <div id="background" class="max-w-full h-full bg-black/[0.19] shadow-lg" :style="{ backgroundImage: 'url(' + product.options[0].images[0] + ')' }">
-            <div v-if="product.discount" class="text-xs w-fit text-white p-2 bg-[#399918]">-{{ product.discount }}%</div>
+            <div v-if="product.discount" class="text-xs w-fit text-white p-2 bg-[#ffc2c2]">-{{ product.discount }}%</div>
           </div>
           <div class="mt-2">
             <button class="box-border py-2 px-4 w-full bg-[#fff] hover:bg-[#ffc2c2] shadow-lg transition">Pievienot grozam</button>
