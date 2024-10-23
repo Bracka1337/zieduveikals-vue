@@ -1,6 +1,5 @@
 <template>
   <v-main>
-    <!-- App Bar -->
     <v-app-bar app clipped-left>
       <v-app-bar-nav-icon @click="drawer = !drawer" class="d-md-none"></v-app-bar-nav-icon>
       <v-toolbar-title>Orders</v-toolbar-title>
@@ -25,11 +24,11 @@
             <v-list-item-title>Navigation Item</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <!-- Add more navigation items as needed -->
+
       </v-list>
     </v-navigation-drawer>
 
-    <!-- Orders Table with Expandable Rows -->
+
     <v-container fluid>
       <v-card>
         <v-data-table
@@ -72,7 +71,7 @@
             </v-toolbar>
           </template>
 
-          <!-- Customize the Row to Include Expand/Collapse Button -->
+ 
           <template v-slot:item="{ item, toggleExpand, isExpanded }">
             <tr>
               <td>{{ item.id }}</td>
@@ -87,7 +86,7 @@
             </tr>
           </template>
 
-          <!-- Expanded Row Content -->
+
           <template v-slot:expanded-item="{ item }">
             <v-card flat>
               <v-card-text>
@@ -138,13 +137,12 @@
       </v-card>
     </v-container>
 
-    <!-- Sentinel Element for Infinite Scroll -->
+
     <div ref="sentinel"></div>
 
-    <!-- Loading Indicator for Infinite Scroll -->
     <v-progress-linear v-if="isLoadingMore" indeterminate color="primary" class="mt-2"></v-progress-linear>
 
-    <!-- Snackbar for Notifications -->
+
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
       {{ snackbar.message }}
       <template v-slot:action="{ attrs }">
