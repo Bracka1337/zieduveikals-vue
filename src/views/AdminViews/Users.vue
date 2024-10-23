@@ -117,7 +117,7 @@
     <!-- Snackbar for Feedback Messages -->
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
       {{ snackbar.message }}
-
+      <v-btn @click="snackbar.show = false">Close</v-btn>
     </v-snackbar>
   </v-main>
 </template>
@@ -133,7 +133,7 @@ interface User {
   email: string;
   role: string;
   promocode_id: number | null;
-  // Add other fields            as necessary
+  
 }
 
 interface Promocode {
@@ -158,7 +158,7 @@ export default defineComponent({
       promocode_id: null as number | null,
     });
     const formValid = ref(false);
-    const roles = ['ADMIN', 'USER', 'MODERATOR']; // Adjust roles as per your backend
+    const roles = ['ADMIN', 'USER', 'MODERATOR']; 
     const promocodes = ref<Promocode[]>([]);
 
     const snackbar = reactive({
@@ -167,18 +167,21 @@ export default defineComponent({
       color: '',
     });
 
-    // Debounced search to improve performance
+
+    const AUTH_TOKEN = localStorage.getItem('access_token');
+
+    
     const handleSearchDebounced = debounce(() => {
       handleSearch();
     }, 300);
 
-    // Fetch users from the backend
+    
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:5000/get_users', {
+        const response = await axios.get('http://https://ziedu-veikals.vercel.app/get_users', {
           headers: {
             Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI4OTI0NjQwfQ.G1VMpLDRnpSybt83pf3nyuU2NFfY_tLGykFJIv5R28U', // Replace with dynamic token management
+            AUTH_TOKEN, 
           },
         });
         users.value = response.data.users;
@@ -189,13 +192,13 @@ export default defineComponent({
       }
     };
 
-    // Fetch promocodes from the backend
+    
     const fetchPromocodes = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:5000/get_promocodes', {
+        const response = await axios.get('http://https://ziedu-veikals.vercel.app/get_promocodes', {
           headers: {
             Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI4OTI0NjQwfQ.G1VMpLDRnpSybt83pf3nyuU2NFfY_tLGykFJIv5R28U', // Replace with dynamic token management
+            AUTH_TOKEN, 
           },
         });
         promocodes.value = response.data.promocodes;
@@ -205,7 +208,7 @@ export default defineComponent({
       }
     };
 
-    // Handle search functionality
+    
     const handleSearch = () => {
       const term = searchTerm.value.trim().toLowerCase();
       if (term.length > 0) {
@@ -219,7 +222,7 @@ export default defineComponent({
       }
     };
 
-    // Open Edit Dialog with selected user data
+    
     const openEditDialog = (user: User) => {
       editFormData.id = user.id;
       editFormData.username = user.username;
@@ -229,12 +232,12 @@ export default defineComponent({
       editDialog.value = true;
     };
 
-    // Close Edit Dialog
+    
     const closeEditDialog = () => {
       editDialog.value = false;
     };
 
-    // Submit Edit Form
+    
     const submitEdit = async () => {
       if (!formValid.value) return;
 
@@ -247,19 +250,19 @@ export default defineComponent({
         };
 
         const response = await axios.patch(
-          `http://127.0.0.1:5000/user/${editFormData.id}`,
+          `http://https://ziedu-veikals.vercel.app/user/${editFormData.id}`,
           payload,
           {
             headers: {
               Authorization:
-                'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI4OTI0NjQwfQ.G1VMpLDRnpSybt83pf3nyuU2NFfY_tLGykFJIv5R28U', // Replace with dynamic token management
+              AUTH_TOKEN, 
               'Content-Type': 'application/json',
             },
           }
         );
 
         if (response.status === 200) {
-          // Update the local users list
+          
           const index = users.value.findIndex((u) => u.id === editFormData.id);
           if (index !== -1) {
             users.value[index] = {
@@ -269,7 +272,7 @@ export default defineComponent({
               role: editFormData.role,
               promocode_id: editFormData.promocode_id,
             };
-            handleSearch(); // Reapply search filter
+            handleSearch(); 
           }
           showSnackbar('User updated successfully', 'success');
           closeEditDialog();
@@ -282,27 +285,27 @@ export default defineComponent({
       }
     };
 
-    // Show Snackbar for feedback messages
+    
     const showSnackbar = (message: string, color: string) => {
       snackbar.message = message;
       snackbar.color = color;
       snackbar.show = true;
     };
 
-    // Optional: Methods to handle Add actions
+    
     const addUser = () => {
-      // Implement Add User functionality
+      
       console.log('Add User clicked');
-      // You might want to open a similar dialog for adding users
+      
     };
 
-    // Utility to format date strings
+    
     const formatDate = (dateStr: string): string => {
       const date = new Date(dateStr);
       return date.toLocaleString();
     };
 
-    // Fetch users and promocodes on component mount
+    
     onMounted(() => {
       fetchUsers();
       fetchPromocodes();
@@ -316,7 +319,7 @@ export default defineComponent({
       handleSearchDebounced,
       handleSearch,
       addUser,
-      // Removed editUser and deleteUser as separate methods
+      
       openEditDialog,
       closeEditDialog,
       submitEdit,

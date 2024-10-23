@@ -118,7 +118,7 @@
   import axios from 'axios';
   
   interface Promocode {
-    id?: number; // Made optional
+    id?: number; 
     code: string;
     discount: number;
     count_usage: number;
@@ -146,12 +146,12 @@
   
       const promocodeForm = ref<InstanceType<typeof import('vue').ComponentPublicInstance>>();
   
-      // Replace with your actual Bearer token retrieval logic
-      const AUTH_TOKEN = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwiZXhwIjoxNzI4OTIzNjY3fQ._mokgzzugFhnU5_iXA6yGCFy-p-Zw9cYQkAKwxY58LA';
+      
+      const AUTH_TOKEN = localStorage.getItem('access_token');
   
       const fetchPromocodes = async () => {
         try {
-          const response = await axios.get('http://127.0.0.1:5000/promocodes', {
+          const response = await axios.get('http://https://ziedu-veikals.vercel.app/promocodes', {
             headers: {
               Authorization: AUTH_TOKEN,
             },
@@ -183,7 +183,7 @@
         if (!confirm(`Are you sure you want to delete the promocode "${promocodeCode}"?`)) return;
   
         try {
-          await axios.delete(`http://127.0.0.1:5000/promocode/${encodeURIComponent(promocodeCode)}`, {
+          await axios.delete(`http://https://ziedu-veikals.vercel.app/promocode/${encodeURIComponent(promocodeCode)}`, {
             headers: {
               Authorization: AUTH_TOKEN,
             },
@@ -219,7 +219,7 @@
         if (promocodeForm.value) {
           promocodeForm.value.resetValidation();
         }
-        formValid.value = false; // Reset form validity
+        formValid.value = false; 
         Object.assign(selectedPromocode, {
           code: '',
           discount: 0,
@@ -237,9 +237,9 @@
         try {
           let response;
           if (isEditing.value) {
-            // Editing existing promocode using the code as identifier
+            
             response = await axios.patch(
-              `http://127.0.0.1:5000/promocode/${encodeURIComponent(selectedPromocode.code)}`,
+              `http://https://ziedu-veikals.vercel.app/promocode/${encodeURIComponent(selectedPromocode.code)}`,
               {
                 discount: selectedPromocode.discount,
                 count_usage: selectedPromocode.count_usage,
@@ -251,7 +251,7 @@
                 },
               }
             );
-            // Update the local promocodes list
+            
             const index = promocodes.value.findIndex((p) => p.code === selectedPromocode.code);
             if (index !== -1) {
               promocodes.value[index] = response.data;
@@ -259,9 +259,9 @@
               showSnackbar('Promocode updated successfully.', 'success');
             }
           } else {
-            // Creating new promocode
+            
             response = await axios.post(
-              'http://127.0.0.1:5000/promocodes',
+              'http://https://ziedu-veikals.vercel.app/promocodes',
               {
                 code: selectedPromocode.code,
                 discount: selectedPromocode.discount,
@@ -274,7 +274,7 @@
                 },
               }
             );
-            // Ensure the response contains the necessary fields
+            
             if (response.data && response.data.code) {
               promocodes.value.push(response.data);
               handleSearch();
@@ -283,7 +283,7 @@
               throw new Error('Incomplete promocode data received from server.');
             }
           }
-          closeModal(); // Close modal only after successful API call
+          closeModal(); 
         } catch (error) {
           console.error('Error saving promocode:', error);
           const errorMessage =

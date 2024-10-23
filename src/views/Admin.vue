@@ -54,13 +54,40 @@
       </v-container>
     </v-app>
 </template>
-  
+
 <script>
-    export default {
-        data() {
-            return {
-                drawer: false
-            }
+export default {
+  data() {
+    return {
+      drawer: false,
+    };
+  },
+  mounted() {
+    this.checkAdminAccess();
+  },
+  methods: {
+    async checkAdminAccess() {
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        try {
+          const response = await fetch('https://ziedu-veikals.vercel.app/is_admin', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          const data = await response.json();
+          if (response.ok) {
+            //this.$router.push('/login'); 
+          }
+        } catch (error) {
+          this.$router.push('/login'); 
         }
-    }
+      } else {
+        this.$router.push('/login'); 
+      }
+    },
+  },
+};
 </script>
