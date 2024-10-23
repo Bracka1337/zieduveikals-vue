@@ -61,7 +61,6 @@
     data () {
       return {
         loading: true,
-        quantity: 1, // Initialize quantity
         data: [],
       }
     },
