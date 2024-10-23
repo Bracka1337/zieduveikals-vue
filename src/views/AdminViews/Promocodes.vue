@@ -147,11 +147,11 @@
       const promocodeForm = ref<InstanceType<typeof import('vue').ComponentPublicInstance>>();
   
       
-      const AUTH_TOKEN = "Bearer" + localStorage.getItem('access_token');
+      const AUTH_TOKEN = "Bearer " + localStorage.getItem('access_token');
   
       const fetchPromocodes = async () => {
         try {
-          const response = await axios.get('http://https://ziedu-veikals.vercel.app/promocodes', {
+          const response = await axios.get('https://ziedu-veikals.vercel.app/promocodes', {
             headers: {
               Authorization: AUTH_TOKEN,
             },
@@ -286,8 +286,12 @@
           closeModal(); 
         } catch (error) {
           console.error('Error saving promocode:', error);
-          const errorMessage =
-            error.response?.data?.message || 'Failed to save promocode.';
+          if (error.response) {
+            console.error('Response data:', error.response.data);
+            console.error('Response status:', error.response.status);
+            console.error('Response headers:', error.response.headers);
+          }
+          const errorMessage = error.response?.data?.message || 'Failed to save promocode.';
           showSnackbar(errorMessage, 'error');
         }
       };

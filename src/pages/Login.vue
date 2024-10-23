@@ -197,8 +197,20 @@ const submitLogin = async () => {
 
     if (response.ok) {
       successMessage.value = 'Pieteikšanās veiksmīga!'
+
       localStorage.setItem('access_token', data.access_token)
-      setTimeout(() => router.push('/'), 1500)
+      const response2 = await fetch('https://ziedu-veikals.vercel.app/is_admin', {
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${data.access_token}` },
+      })
+
+      const data2 = await response2.json()
+
+      if (response2.ok) {
+        router.push('/admin/dashboard')
+      } else {
+        router.push('/')
+      }
+
     } else {
       errorMessage.value = data.message || 'Pieteikšanās neizdevās.'
     }
