@@ -15,7 +15,6 @@
         outlined
         dense
       />
-
     </v-app-bar>
 
     <!-- Navigation Drawer (Optional) -->
@@ -31,8 +30,13 @@
       </v-list>
     </v-navigation-drawer>
 
+    <!-- Loading Animation -->
+    <v-container fluid v-if="isLoading" class="d-flex justify-center align-center" style="height: 80vh;">
+      <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
+    </v-container>
+
     <!-- Users Grid -->
-    <v-container fluid>
+    <v-container fluid v-else>
       <v-row>
         <v-col
           v-for="user in filteredUsers"
@@ -117,7 +121,6 @@
     <!-- Snackbar for Feedback Messages -->
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
       {{ snackbar.message }}
-      <v-btn @click="snackbar.show = false">Close</v-btn>
     </v-snackbar>
   </v-main>
 </template>
@@ -133,7 +136,6 @@ interface User {
   email: string;
   role: string;
   promocode_id: number | null;
-  
 }
 
 interface Promocode {
@@ -158,7 +160,7 @@ export default defineComponent({
       promocode_id: null as number | null,
     });
     const formValid = ref(false);
-    const roles = ['ADMIN', 'USER']; 
+    const roles = ['ADMIN', 'USER'];
     const promocodes = ref<Promocode[]>([]);
 
     const snackbar = reactive({
@@ -167,21 +169,19 @@ export default defineComponent({
       color: '',
     });
 
+    const isLoading = ref(true); // Added loading state
 
     const AUTH_TOKEN = "Bearer " + localStorage.getItem('access_token');
 
-    
     const handleSearchDebounced = debounce(() => {
       handleSearch();
     }, 300);
 
-    
     const fetchUsers = async () => {
       try {
         const response = await axios.get('https://ziedu-veikals.vercel.app/get_users', {
           headers: {
-            Authorization:
-            AUTH_TOKEN, 
+            Authorization: AUTH_TOKEN,
           },
         });
         users.value = response.data.users;
@@ -189,26 +189,25 @@ export default defineComponent({
       } catch (error) {
         console.error('Error loading users:', error);
         showSnackbar('Error loading users', 'error');
+      } finally {
+        isLoading.value = false; // Set loading to false after data is fetched
       }
     };
 
-    
     const fetchPromocodes = async () => {
       try {
         const response = await axios.get('https://ziedu-veikals.vercel.app/get_promocodes', {
           headers: {
-            Authorization:
-            AUTH_TOKEN, 
+            Authorization: AUTH_TOKEN,
           },
         });
         promocodes.value = response.data.promocodes;
       } catch (error) {
-        console.error('Error loading users:', error);
-        showSnackbar('Error loading users', 'error');
+        console.error('Error loading promocodes:', error);
+       
       }
     };
 
-    
     const handleSearch = () => {
       const term = searchTerm.value.trim().toLowerCase();
       if (term.length > 0) {
@@ -222,7 +221,6 @@ export default defineComponent({
       }
     };
 
-    
     const openEditDialog = (user: User) => {
       editFormData.id = user.id;
       editFormData.username = user.username;
@@ -232,12 +230,10 @@ export default defineComponent({
       editDialog.value = true;
     };
 
-    
     const closeEditDialog = () => {
       editDialog.value = false;
     };
 
-    
     const submitEdit = async () => {
       if (!formValid.value) return;
 
@@ -254,15 +250,13 @@ export default defineComponent({
           payload,
           {
             headers: {
-              Authorization:
-              AUTH_TOKEN, 
+              Authorization: AUTH_TOKEN,
               'Content-Type': 'application/json',
             },
           }
         );
 
         if (response.status === 200) {
-          
           const index = users.value.findIndex((u) => u.id === editFormData.id);
           if (index !== -1) {
             users.value[index] = {
@@ -272,7 +266,7 @@ export default defineComponent({
               role: editFormData.role,
               promocode_id: editFormData.promocode_id,
             };
-            handleSearch(); 
+            handleSearch();
           }
           showSnackbar('User updated successfully', 'success');
           closeEditDialog();
@@ -285,28 +279,23 @@ export default defineComponent({
       }
     };
 
-    
     const showSnackbar = (message: string, color: string) => {
       snackbar.message = message;
       snackbar.color = color;
       snackbar.show = true;
     };
 
-    
     const addUser = () => {
-      
       console.log('Add User clicked');
-      
     };
 
-    
     const formatDate = (dateStr: string): string => {
       const date = new Date(dateStr);
       return date.toLocaleString();
     };
 
-    
     onMounted(() => {
+      isLoading.value = true; // Ensure loading is true before fetching data
       fetchUsers();
       fetchPromocodes();
     });
@@ -319,7 +308,6 @@ export default defineComponent({
       handleSearchDebounced,
       handleSearch,
       addUser,
-      
       openEditDialog,
       closeEditDialog,
       submitEdit,
@@ -331,18 +319,17 @@ export default defineComponent({
       showSnackbar,
       snackbar,
       formatDate,
+      isLoading, // Return the loading state
     };
   },
 });
 </script>
 
 <style scoped>
-/* Adjust the search bar width or margins if necessary */
 .search-bar {
   max-width: 400px;
 }
 
-/* Style the Add User button for better visibility */
 .v-btn {
   display: flex;
   align-items: center;
@@ -352,7 +339,6 @@ export default defineComponent({
   margin-right: 4px;
 }
 
-/* Optional: Style the Edit Dialog */
 .headline {
   font-weight: bold;
 }
