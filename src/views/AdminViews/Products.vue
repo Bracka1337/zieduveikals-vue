@@ -22,8 +22,13 @@
       </v-btn>
     </v-app-bar>
 
+    <!-- Loading Animation -->
+    <v-container fluid v-if="isLoading" class="d-flex justify-center align-center" style="height: 80vh;">
+      <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
+    </v-container>
+
     <!-- Product Grid -->
-    <v-container fluid>
+    <v-container fluid v-else>
       <v-row>
         <v-col 
           v-for="product in filteredProducts" 
@@ -266,23 +271,20 @@ interface Product {
 export default defineComponent({
   name: 'ProductList',
   setup() {
-    
     const searchTerm = ref('');
     const products = ref<Product[]>([]);
     const filteredProducts = ref<Product[]>([]);
     const isModalOpen = ref(false);
     const isEditing = ref(false);
-    const isSaving = ref(false); 
+    const isSaving = ref(false);
     const selectedProduct = reactive<Product>({
       id: 0,
       name: '',
-      price: 0, 
-      quantity: 0, 
       type: 'BOUQUET',
       options: [],
       short_description: '',
     });
-    const productTypes = ['BOUQUET', 'FLOWER']; 
+    const productTypes = ['BOUQUET', 'FLOWER'];
     const optionTypes = ['COLOR', 'SIZE', 'MATERIAL', 'DEFAULT'];
     const formValid = ref(false);
     const snackbar = reactive({
@@ -290,13 +292,11 @@ export default defineComponent({
       message: '',
       color: 'success',
     });
-    
+    const isLoading = ref(true); // Added loading state
     const productForm = ref<InstanceType<typeof import('vue').ComponentPublicInstance>>();
 
-    
-    const AUTH_TOKEN = "Bearer" + localStorage.getItem('access_token');
+    const AUTH_TOKEN = 'Bearer ' + localStorage.getItem('access_token');
 
-    
     const optionsToDelete = ref<number[]>([]);
 
     const fetchProducts = async () => {
@@ -311,10 +311,13 @@ export default defineComponent({
       } catch (error) {
         console.error('Error fetching products:', error);
         showSnackbar('Failed to load products.', 'error');
+      } finally {
+        isLoading.value = false; // Set loading to false after data is fetched
       }
     };
 
     onMounted(() => {
+      isLoading.value = true; // Ensure loading is true before fetching data
       fetchProducts();
     });
 
@@ -333,7 +336,7 @@ export default defineComponent({
       if (!confirm('Are you sure you want to delete this product?')) return;
 
       try {
-        await axios.delete(`https://ziedu-veikals.vercel.app/${productId}`, {
+        await axios.delete(`https://ziedu-veikals.vercel.app/products/${productId}`, {
           headers: {
             Authorization: AUTH_TOKEN,
           },
@@ -359,8 +362,6 @@ export default defineComponent({
       Object.assign(selectedProduct, {
         id: 0,
         name: '',
-        price: 0, 
-        quantity: 0, 
         type: 'BOUQUET',
         options: [
           {
@@ -374,7 +375,6 @@ export default defineComponent({
         ],
         short_description: '',
       });
-      
       optionsToDelete.value = [];
       isModalOpen.value = true;
     };
@@ -387,8 +387,6 @@ export default defineComponent({
       Object.assign(selectedProduct, {
         id: 0,
         name: '',
-        price: 0, 
-        quantity: 0, 
         type: 'BOUQUET',
         options: [],
         short_description: '',
@@ -447,7 +445,7 @@ export default defineComponent({
             if (link) {
               option.images.push(link);
             } else {
-              throw new Error('Upload response does not contain a link.');
+              throw new Error('Server response does not contain an image link.');
             }
           } catch (error) {
             console.error('Error uploading image:', error);
@@ -484,7 +482,7 @@ export default defineComponent({
         let response;
         if (isEditing.value) {
           response = await axios.patch(
-            `https://ziedu-veikals.vercel.app/${selectedProduct.id}`,
+            `https://ziedu-veikals.vercel.app/products/${selectedProduct.id}`,
             preparePatchData(),
             {
               headers: {
@@ -596,12 +594,10 @@ export default defineComponent({
       snackbar.show = true;
     };
 
-    
     const hasDefaultOption = computed(() => {
       return selectedProduct.options.some(opt => opt.type === 'DEFAULT');
     });
 
-    
     const canAddOptionType = (type: string) => {
       if (type === 'DEFAULT') {
         return !hasDefaultOption.value;
@@ -609,11 +605,9 @@ export default defineComponent({
       return true;
     };
 
-    
     watch(() => selectedProduct.options, (newOptions) => {
       const defaultOptions = newOptions.filter(opt => opt.type === 'DEFAULT');
       if (defaultOptions.length > 1) {
-        
         defaultOptions.slice(1).forEach(opt => {
           opt.type = 'COLOR'; 
         });
@@ -648,10 +642,11 @@ export default defineComponent({
       removeImage,
       snackbar,
       showSnackbar,
-      isSaving, 
+      isSaving,
       hasDefaultOption,
       canAddOptionType,
       handleOptionTypeChange,
+      isLoading, // Return the loading state
     };
   },
 });
@@ -702,5 +697,10 @@ export default defineComponent({
 /* Center align images and delete button in options */
 .d-flex.justify-center.align-center {
   align-items: center;
+}
+
+/* Optional: Style the Loading Container */
+.d-flex.justify-center.align-center {
+  min-height: 50vh;
 }
 </style>
