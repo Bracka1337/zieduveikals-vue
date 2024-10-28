@@ -58,7 +58,7 @@
               />
               <button
                 @click="applyPromocode"
-                class="bg-[#ffc2c2] text-white px-4 py-2 rounded "
+                class="bg-[#ffc2c2] text-white px-4 py-2 rounded hover:bg-[#ffb2b2] transition duration-200"
               >
                 Pielietot
               </button>
@@ -69,7 +69,6 @@
           <p class="text-lg text-gray-500">Jūsu grozs ir tukšs.</p>
         </div>
       </div>
-
 
       <div class="w-full md:w-1/3">
         <div class="bg-white shadow-md rounded-lg p-4">
@@ -86,6 +85,26 @@
                 <option value="fiz">Fiziska persona</option>
                 <option value="jur">Juridiska persona</option>
               </select>
+            </div>
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-700">Vārds</label>
+              <input
+                id="name"
+                v-model="orderInfo.name"
+                type="text"
+                required
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+            <div>
+              <label for="surname" class="block text-sm font-medium text-gray-700">Uzvārds</label>
+              <input
+                id="surname"
+                v-model="orderInfo.surname"
+                type="text"
+                required
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              />
             </div>
             <div>
               <label for="phoneNumber" class="block text-sm font-medium text-gray-700">Tālruņa numurs</label>
@@ -109,7 +128,7 @@
             </div>
             <button
               type="submit"
-              class="w-full bg-[#ffc2c2] text-white px-4 py-2 rounded "
+              class="w-full bg-[#ffc2c2] text-white px-4 py-2 rounded hover:bg-[#ffb2b2] transition duration-200"
               :disabled="isProcessing"
             >
               {{ isProcessing ? 'Apstrādā...' : 'Veikt pasūtījumu' }}
@@ -144,7 +163,9 @@ const discountAmount = ref(0)
 const orderInfo = ref({
   customer_status: 'fiz',
   phone_number: '',
-  address: ''
+  address: '',
+  name: '',
+  surname: ''
 })
 
 const totalPrice = computed(() => {
