@@ -87,6 +87,8 @@
               <p><strong>Created At:</strong> {{ formatDate(selectedOrder.created_at) }}</p>
               <p><strong>Address:</strong> {{ selectedOrder.address }}</p>
               <p><strong>Phone Number:</strong> {{ selectedOrder.phone_number }}</p>
+              <p><strong>Name</strong> {{ selectedOrder.name }}</p>
+              <p><strong>Surname</strong> {{ selectedOrder.surname }}</p>
             </v-col>
             <v-col cols="12" sm="6">
               <p><strong>User:</strong> {{ selectedOrder.user.username }}</p>
