@@ -22,7 +22,6 @@
       </div>
     </div>
 
-    
     <div class="bg-white shadow rounded-lg overflow-hidden">
       <div class="p-6">
         <h2 class="text-2xl font-bold mb-2">Previous Orders</h2>
@@ -42,18 +41,17 @@
               <span :class="['px-2 py-1 text-xs font-semibold rounded-full', order.status === 'Delivered' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800']">
                 {{ order.status }}
               </span>
-                <p class="font-medium">{{ order.items.reduce((total, item) => total + (item.quantity * item.price), 0) }}</p>
+              <p class="font-medium">{{ order.items.reduce((total, item) => total + (item.quantity * item.price), 0) }}</p>
             </div>
           </div>
         </div>
       </div>
     </div>
-    
-    
+
     <teleport to="body">
-      <div v-if="isChangePasswordDialogOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+      <div v-if="isChangePasswordDialogOpen" class="fixed inset-0 bg-opacity-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-          <h3 class="text-lg font-semibold mb-4">Change Password</h3>
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Change Password</h3>
           <div class="space-y-4">
             <div>
               <label for="current" class="block text-sm font-medium text-gray-700">Current Password</label>
@@ -72,7 +70,7 @@
             <button @click="closeChangePasswordDialog" class="px-4 py-2 bg-white text-gray-800 rounded border border-gray-300 hover:bg-gray-100">
               Cancel
             </button>
-            <button @click="changePassword" class="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700" :disabled="!isPasswordValid">
+            <button @click="changePassword" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" :disabled="!isPasswordValid">
               Save Changes
             </button>
           </div>
@@ -115,7 +113,6 @@ const fetchUserData = async () => {
       throw new Error('Failed to fetch data')
     }
 
-
     const data = await response.json()
     orders.value = data.orders
     user.value = data.user
@@ -139,10 +136,40 @@ const closeChangePasswordDialog = () => {
   confirmPassword.value = ''
 }
 
-const changePassword = () => {
+const changePassword = async () => {
   if (isPasswordValid.value) {
-    console.log('Changing password...')
-    closeChangePasswordDialog()
+    const token = localStorage.getItem('access_token')
+
+    if (!token) {
+      console.error('No token found')
+      return
+    }
+
+    try {
+      const response = await fetch('https://ziedu-veikals.vercel.app/change_password', {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          old_password: currentPassword.value,
+          new_password: newPassword.value
+        })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Failed to change password')
+      }
+
+      const data = await response.json()
+      alert(data.message)  // Success message
+      closeChangePasswordDialog()
+    } catch (error) {
+      console.error('Error changing password:', error)
+      alert(error.message)
+    }
   } else {
     alert("Passwords do not match.")
   }
@@ -153,5 +180,3 @@ const logout = () => {
   location.reload();
 }
 </script>
-
-
