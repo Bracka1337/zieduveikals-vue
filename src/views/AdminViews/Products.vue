@@ -22,12 +22,12 @@
       </v-btn>
     </v-app-bar>
 
-    <!-- Loading Animation -->
+    
     <v-container fluid v-if="isLoading" class="d-flex justify-center align-center" style="height: 80vh;">
       <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
     </v-container>
 
-    <!-- Product Grid -->
+    
     <v-container fluid v-else>
       <v-row>
         <v-col 
@@ -39,17 +39,17 @@
           lg="3"
         >
           <v-card class="product-card">
-            <!-- Product Image -->
+           
             <v-img 
               :src="getProductImage(product)" 
               class="product-image" 
               contain 
             >
-              <!-- Overlayed Product Name -->
+             
               <v-card-title class="product-title">{{ product.name }}</v-card-title>
             </v-img>
             
-            <!-- Product Details -->
+            
             <v-card-subtitle>
               <v-row>
                 <v-col>
@@ -67,7 +67,7 @@
               </v-row>
             </v-card-subtitle>
             
-            <!-- Product Actions -->
+           
             <v-card-actions>
               <v-btn color="primary" @click="openEditProductModal(product)">
                 <v-icon left>mdi-pencil</v-icon>
@@ -83,7 +83,7 @@
       </v-row>
     </v-container>
 
-    <!-- Add/Edit Product Dialog -->
+    
     <v-dialog v-model="isModalOpen" max-width="800px">
       <v-card>
         <v-card-title>
@@ -91,7 +91,7 @@
         </v-card-title>
         <v-card-text>
           <v-form ref="productForm" v-model="formValid">
-            <!-- Form Fields -->
+            
             <v-text-field
               label="Product Name"
               v-model="selectedProduct.name"
@@ -122,7 +122,7 @@
               v-model="selectedProduct.is_featured"
             ></v-checkbox>
 
-            <!-- Options Section -->
+            
             <v-divider class="my-4"></v-divider>
             <div class="d-flex justify-space-between align-center mb-2">
               <span class="font-weight-medium">Options</span>
@@ -140,11 +140,7 @@
               <v-card-title>
                 <span>Option {{ index + 1 }}</span>
                 <v-spacer></v-spacer>
-                <!-- 
-                  Delete Button:
-                  - Disabled if the option is the default option.
-                  - Provides visual feedback by changing the icon color.
-                -->
+               
                 <v-btn
                   icon
                   @click="removeOption(index)"
@@ -203,7 +199,7 @@
                     </v-btn>
                   </v-col>
                 </v-row>
-                <!-- Loading Spinner for Image Upload -->
+                
                 <v-progress-linear
                   v-if="option.uploadingImages"
                   indeterminate
@@ -211,7 +207,7 @@
                   class="mt-2"
                 ></v-progress-linear>
                 
-                <!-- Always Include Price and Quantity -->
+                
                 <v-text-field
                   label="Price"
                   v-model.number="option.price"
@@ -245,7 +241,7 @@
       </v-card>
     </v-dialog>
 
-    <!-- Snackbar for Notifications -->
+    
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
       {{ snackbar.message }}
       <template v-slot:action="{ attrs }">
@@ -307,7 +303,7 @@ export default defineComponent({
       message: '',
       color: 'success',
     });
-    const isLoading = ref(true); // Added loading state
+    const isLoading = ref(true); 
     const productForm = ref<InstanceType<typeof import('vue').ComponentPublicInstance>>();
 
     
@@ -329,12 +325,12 @@ export default defineComponent({
         console.error('Error fetching products:', error);
         showSnackbar('Failed to load products.', 'error');
       } finally {
-        isLoading.value = false; // Set loading to false after data is fetched
+        isLoading.value = false; 
       }
     };
 
     onMounted(() => {
-      isLoading.value = true; // Ensure loading is true before fetching data
+      isLoading.value = true; 
       fetchProducts();
     });
 
@@ -369,7 +365,7 @@ export default defineComponent({
 
     const openEditProductModal = (product: Product) => {
       isEditing.value = true;
-      // Deep clone the product to avoid mutating the original data before saving
+      
       Object.assign(selectedProduct, JSON.parse(JSON.stringify(product)));
       optionsToDelete.value = [];
       isModalOpen.value = true;
@@ -432,7 +428,7 @@ export default defineComponent({
     const removeOption = (index: number) => {
       const option = selectedProduct.options[index];
       
-      // Prevent deletion of the default option
+     
       if (option.type === 'DEFAULT') {
         showSnackbar('Cannot delete the default option.', 'error');
         return;
@@ -505,7 +501,7 @@ export default defineComponent({
         return;
       }
 
-      // Optional: Debugging - Log selectedProduct before saving
+      
       console.log('Selected Product Before Save:', JSON.stringify(selectedProduct, null, 2));
 
       isSaving.value = true;
@@ -579,8 +575,8 @@ export default defineComponent({
           type: option.type,
           description: option.description,
           images: option.images, 
-          price: option.price, // Always include price
-          quantity: option.quantity, // Always include quantity
+          price: option.price, 
+          quantity: option.quantity, 
         })),
       };
       return productData;
@@ -600,8 +596,8 @@ export default defineComponent({
           type: option.type,
           description: option.description,
           images: option.images, 
-          price: option.price, // Always include price
-          quantity: option.quantity, // Always include quantity
+          price: option.price, 
+          quantity: option.quantity, 
         })),
       };
       
@@ -678,39 +674,39 @@ export default defineComponent({
       hasDefaultOption,
       canAddOptionType,
       handleOptionTypeChange,
-      isLoading, // Return the loading state
+      isLoading, 
     };
   },
 });
 </script>
 
 <style scoped>
-/* Remove padding from product cards to allow images to span full width */
+
 .product-card {
   padding: 0;
 }
 
-/* Ensure images take full width and cover the area without distortion */
+
 .product-image {
   width: 100%;
-  height: 200px; /* Set a desired height */
-  object-fit: cover; /* Ensures the image covers the area */
-  position: relative; /* To position the title overlay */
+  height: 200px; 
+  object-fit: cover; 
+  position: relative;
 }
 
-/* Style for the overlayed product title */
+
 .product-title {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  background: rgba(0, 0, 0, 0.5); 
   color: white;
   padding: 8px;
   box-sizing: border-box;
 }
 
-/* Limit the search bar width and make it responsive */
+
 .search-bar {
   max-width: 400px;
 }
@@ -721,17 +717,17 @@ export default defineComponent({
   }
 }
 
-/* Optional: Style for option cards */
+
 .option-card {
   padding: 16px;
 }
 
-/* Center align images and delete button in options */
+
 .d-flex.justify-center.align-center {
   align-items: center;
 }
 
-/* Optional: Style the Loading Container */
+
 .d-flex.justify-center.align-center {
   min-height: 50vh;
 }
