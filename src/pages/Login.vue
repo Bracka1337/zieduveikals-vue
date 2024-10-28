@@ -47,7 +47,7 @@
           >
         </div>
 
-        <!-- Confirm password input for registration -->
+ 
         <div v-if="!isLoginMode">
           <label class="block text-sm font-medium text-gray-700" for="confirmPassword">Apstiprināt paroli</label>
           <input
