@@ -3,7 +3,6 @@
     <h2 class="text-2xl font-bold mb-4">Grozs</h2>
     
     <div class="flex flex-col md:flex-row gap-8">
-      <!-- Cart Items -->
       <div class="w-full md:w-2/3">
         <div v-if="cartItems.length > 0">
           <div v-for="item in cartItems" :key="item.id" class="bg-white shadow-md rounded-lg mb-4 p-4 flex justify-between items-center">
@@ -71,7 +70,7 @@
         </div>
       </div>
 
-      <!-- Order Information -->
+
       <div class="w-full md:w-1/3">
         <div class="bg-white shadow-md rounded-lg p-4">
           <h3 class="text-xl font-semibold mb-4">Pasūtījuma informācija</h3>
