@@ -8,7 +8,6 @@
             <div v-if="product.discount" class="text-xs w-fit text-white p-2 bg-[#ffc2c2]">-{{ product.discount }}%</div>
           </div>
           <div class="mt-2">
-            <button class="box-border py-2 px-4 w-full bg-[#fff] hover:bg-[#ffc2c2] shadow-lg transition">Pievienot grozam</button>
             <div class="p-2">
               <p class="font-bold">{{ product.name }}</p>
               <p class="text-slate-500 text-sm">{{ product.short_description }}</p>
