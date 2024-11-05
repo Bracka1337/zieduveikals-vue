@@ -137,41 +137,42 @@ const closeChangePasswordDialog = () => {
 }
 
 const changePassword = async () => {
-  if (isPasswordValid.value) {
-    const token = localStorage.getItem('access_token')
+  if (!isPasswordValid.value) {
+    alert("New passwords do not match.");
+    return; // Exit the function if passwords don't match
+  }
 
-    if (!token) {
-      console.error('No token found')
-      return
-    }
+  const token = localStorage.getItem('access_token');
 
-    try {
-      const response = await fetch('https://ziedu-veikals.vercel.app/change_password', {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          old_password: currentPassword.value,
-          new_password: newPassword.value
-        })
+  if (!token) {
+    console.error('No token found');
+    return;
+  }
+
+  try {
+    const response = await fetch('https://ziedu-veikals.vercel.app/change_password', {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        old_password: currentPassword.value,
+        new_password: newPassword.value
       })
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Failed to change password')
-      }
-
-      const data = await response.json()
-      alert(data.message)  // Success message
-      closeChangePasswordDialog()
-    } catch (error) {
-      console.error('Error changing password:', error)
-      alert(error.message)
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to change password');
     }
-  } else {
-    alert("Passwords do not match.")
+
+    const data = await response.json();
+    alert(data.message);
+    closeChangePasswordDialog();
+  } catch (error) {
+    console.error('Error changing password:', error);
+    alert(error.message);
   }
 }
 
