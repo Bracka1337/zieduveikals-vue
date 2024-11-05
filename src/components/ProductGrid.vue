@@ -48,9 +48,6 @@
             </div>
           </div>
           <div class="mt-2">
-            <button class="box-border py-2 px-4 w-full bg-white hover:bg-[#ffc2c2] shadow-lg transition">
-              Pievienot grozam
-            </button>
             <div class="p-2">
               <p class="font-bold">{{ product.name }}</p>
               <p class="text-slate-500 text-sm">{{ product.short_description }}</p>
@@ -77,14 +74,13 @@ export default {
       products: [],
       Loading: false,
       searchText: '',
-      sortOption: '', // New property for sorting option
+      sortOption: '',
       cacheDuration: 3600000, // Cache duration in milliseconds (e.g., 1 hour)
     }
   },
   watch: {
-    // Watch searchText and trigger a new search after typing stops for 300ms
     searchText: 'debounceSearch',
-    sortOption: 'sortProducts', // Watch sortOption and call sortProducts on change
+    sortOption: 'sortProducts',
   },
   mounted() {
     this.getProducts()
@@ -92,7 +88,7 @@ export default {
   methods: {
     debounceSearch: _.debounce(function () {
       this.performSearch()
-    }, 300), // Delays search calls by 300ms
+    }, 300),
 
     async performSearch() {
       this.products = []
@@ -104,7 +100,7 @@ export default {
       if (cachedData) {
         console.log('Using cached data')
         this.products = cachedData
-        this.sortProducts() // Sort cached data if needed
+        this.sortProducts()
         return
       }
 
@@ -129,7 +125,7 @@ export default {
           console.log('Fetched products successfully')
           this.products = data.products
           this.cacheProducts(searchQuery, data.products)
-          this.sortProducts() // Sort fetched data if needed
+          this.sortProducts()
         } else {
           console.log("Couldn't get products")
         }
@@ -169,7 +165,6 @@ export default {
       return discount ? (price - price * (discount / 100)).toFixed(2) : price.toFixed(2)
     },
 
-    // New method for sorting products based on selected option
     sortProducts() {
       if (this.sortOption === 'price-asc') {
         this.products.sort((a, b) => a.options[0].price - b.options[0].price)
