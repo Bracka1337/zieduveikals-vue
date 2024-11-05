@@ -1,20 +1,30 @@
 <template>
   <div class="flex mx-auto max-w-[1200px] flex-col p-8">
-    <!-- Search Box -->
+    <!-- Search Box with Sorting Filters -->
     <div class="my-8 p-4 bg-white rounded shadow-lg">
-      <div class="mb-4">
-        <label class="block text-lg font-semibold mb-2" for="search-text">Meklēt</label>
+      <div class="border border-gray-300 rounded-lg flex row">
         <input
           id="search-text"
           v-model="searchText"
           @input="debounceSearch"
-          class="w-full p-2 border border-gray-300 rounded-lg"
+          class="w-full p-2"
           placeholder="Ievadiet atslēgvārdu"
           type="text"
         />
+        <div class="w-[100px] m-1 p-1 text-center border-l border-gray-300">
+          <select
+            id="sort-option"
+            v-model="sortOption"
+            @change="sortProducts"
+            class="text-center"
+          >
+            <option value="">Filtri</option>
+            <option value="price-asc">Cena: ↑</option>
+            <option value="price-desc">Cena: ↓</option>
+          </select>
+        </div>
       </div>
     </div>
-
     <!-- Loading Indicator and No Results Message -->
     <div class="flex justify-center">
       <span v-if="Loading">Ielādē produktus...</span>
@@ -67,11 +77,14 @@ export default {
       products: [],
       Loading: false,
       searchText: '',
+      sortOption: '', // New property for sorting option
       cacheDuration: 3600000, // Cache duration in milliseconds (e.g., 1 hour)
     }
   },
   watch: {
-    searchText: 'debounceSearch'
+    // Watch searchText and trigger a new search after typing stops for 300ms
+    searchText: 'debounceSearch',
+    sortOption: 'sortProducts', // Watch sortOption and call sortProducts on change
   },
   mounted() {
     this.getProducts()
@@ -79,7 +92,7 @@ export default {
   methods: {
     debounceSearch: _.debounce(function () {
       this.performSearch()
-    }, 300),
+    }, 300), // Delays search calls by 300ms
 
     async performSearch() {
       this.products = []
@@ -91,6 +104,7 @@ export default {
       if (cachedData) {
         console.log('Using cached data')
         this.products = cachedData
+        this.sortProducts() // Sort cached data if needed
         return
       }
 
@@ -115,6 +129,7 @@ export default {
           console.log('Fetched products successfully')
           this.products = data.products
           this.cacheProducts(searchQuery, data.products)
+          this.sortProducts() // Sort fetched data if needed
         } else {
           console.log("Couldn't get products")
         }
@@ -124,7 +139,7 @@ export default {
         this.Loading = false
       }
     },
-    
+
     cacheProducts(searchQuery, newProducts) {
       const cacheData = {
         products: newProducts,
@@ -152,6 +167,15 @@ export default {
       const price = product.options[0].price
       const discount = product.discount
       return discount ? (price - price * (discount / 100)).toFixed(2) : price.toFixed(2)
+    },
+
+    // New method for sorting products based on selected option
+    sortProducts() {
+      if (this.sortOption === 'price-asc') {
+        this.products.sort((a, b) => a.options[0].price - b.options[0].price)
+      } else if (this.sortOption === 'price-desc') {
+        this.products.sort((a, b) => b.options[0].price - a.options[0].price)
+      }
     },
   },
 }
