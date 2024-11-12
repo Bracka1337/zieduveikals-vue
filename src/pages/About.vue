@@ -1,5 +1,5 @@
 <template>
-    <section class="bg-white py-12 h-auto w-auto ">
+    <section class="bg-tranpasrent py-12 h-auto w-auto ">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div class="text-center mb-12">
@@ -12,7 +12,7 @@
   
         
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <!-- Описание компании -->
+
           <div>
             <h2 class="text-3xl font-semibold text-gray-800">Mūsu misija</h2>
             <p class="mt-4 text-gray-600 leading-relaxed">
@@ -32,7 +32,7 @@
               jebkuram gadījumam, vai tas būtu dzimšanas diena, kāzas vai jebkurš cits īpašs notikums.
             </p>
   
-            <!-- Преимущества -->
+
             <div class="mt-8">
               <h3 class="text-2xl font-semibold text-gray-800">Kāpēc izvēlēties mūs?</h3>
               <ul class="mt-4 space-y-4 text-gray-600">
@@ -57,10 +57,9 @@
               </ul>
             </div>
           </div>
-  
-          <!-- Изображение -->
+
           <div class="hidden lg:block">
-            <img class="rounded-lg shadow-lg" src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=80" alt="Ziedu kompozīcija">
+            <img class="rounded-lg shadow-lg" src="https://img.1188.lv/v4/202201/734/898/4/adf424f692c72a1bbc70cc3e2c101c27.png" alt="Ziedu kompozīcija">
           </div>
         </div>
       </div>

@@ -26,7 +26,7 @@
         </div>
 
         <div class="mt-4 flex items-center">
-          <label class="mr-2" for="quantity">Quantity:</label>
+          <label class="mr-2" for="quantity">Daudzums:</label>
           <input
             v-model.number="quantity"
             id="quantity"
@@ -43,14 +43,14 @@
             @click="buyNow"
             :disabled="isAddingToCart"
           >
-            {{ isAddingToCart ? 'Processing...' : 'Buy Now' }}
+            {{ isAddingToCart ? 'Processing...' : 'Pirkt' }}
           </button>
           <button
             class="w-full lg:w-60 py-3 bg-white text-black border border-gray-300 rounded-lg shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
             @click="addToCart"
             :disabled="isAddingToCart"
           >
-            {{ isAddingToCart ? 'Adding...' : 'Add to Cart' }}
+            {{ isAddingToCart ? 'Adding...' : 'Pievienot Grozam' }}
           </button>
         </div>
 
