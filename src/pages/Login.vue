@@ -7,7 +7,6 @@
       </h2>
 
       <form class="space-y-4" @submit.prevent="isLoginMode ? submitLogin() : submitRegister()">
-
         <div>
           <label class="block text-sm font-medium text-gray-700" for="username">Lietotājvārds</label>
           <input
