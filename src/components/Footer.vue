@@ -5,7 +5,7 @@
       <a class="text-lg">Katalogs</a>
       <a class="text-lg">Kontaktinformācija</a>
       <a class="text-xs" href="/FAQ">FAQ</a>
-      <a class="text-xs" href="#">Lābākie piedāvājumi</a>
+      <a class="text-xs" href="/catalog">Mūsu preces</a>
       <a class="text-xs">+371 29930395</a>
     </nav>
 
