@@ -39,7 +39,7 @@
 
         <div class="mt-8 flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:space-x-4">
           <button
-            class="w-full lg:w-60 py-3 bg-[#ffc2c2] text-white rounded-lg shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ffc2c2]"
+            class="w-full lg:w-60 py-3 bg-[#ffb0b0] text-white rounded-lg shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ffc2c2]"
             @click="buyNow"
             :disabled="isAddingToCart"
           >
@@ -50,7 +50,7 @@
             @click="addToCart"
             :disabled="isAddingToCart"
           >
-            {{ isAddingToCart ? 'Adding...' : 'Pievienot Grozam' }}
+            {{ isAddingToCart ? 'Pievieno...' : 'Pievienot Grozam' }}
           </button>
         </div>
 

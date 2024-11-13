@@ -33,11 +33,10 @@
             <path d="M12 14c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM12 14c-3.31 0-6 1.69-6 4v1h12v-1c0-2.31-2.69-4-6-4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
           </svg>
         </a>
-        <!-- Conditionally render the "Ieiet" button based on access token -->
-        <a v-if="!accessToken" class="rounded-md p-2 w-20 bg-[#ffc2c2] text-white text-center text-xm" href="/Login">Ieiet</a>
+        <a v-if="!accessToken" class="rounded-md p-2 w-20 bg-[#e6b1b1] text-white hover:bg-[#ffc2c2] text-center text-xm" href="/Login">Ieiet</a>
       </div>
       <div class="lg:hidden flex items-center space-x-4">
-        <!-- Mobile icons -->
+
         <a class="text-gray-500 hover:text-black" href="/Cart">
           <svg
             class="w-6 h-6"
@@ -79,8 +78,7 @@
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
         <a class="block text-lg text-gray-700 hover:bg-gray-100" href="#">Par mums</a>
         <a class="block text-lg text-gray-700 hover:bg-gray-100" href="#">Kontakti</a>
-        <!-- Conditionally render the "Ieiet" button in the mobile menu -->
-        <a v-if="!accessToken" class="block text-lg text-white bg-[#ffc2c2] text-center rounded-md py-2 mt-4 w-full" href="/Login">Ieiet</a>
+        <a v-if="!accessToken" class="block text-lg bg-[#e6b1b1] text-white hover:bg-[#ffc2c2] text-center rounded-md py-2 mt-4 w-full" href="/Login">Ieiet</a>
       </div>
     </div>
   </header>

@@ -15,7 +15,7 @@
           <button @click="openChangePasswordDialog" class="px-4 py-2 bg-white text-gray-800 rounded border border-gray-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 transition">
             Change Password
           </button>
-          <button @click="logout" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition">
+          <button @click="logout" class="px-4 py-2 bg-[#e6b1b1] text-white rounded hover:bg-[#ffc2c2] focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition">
             Logout
           </button>
         </div>
