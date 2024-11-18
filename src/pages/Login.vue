@@ -108,6 +108,8 @@
 </template>
 
 <script>
+import { isRegExp } from 'lodash';
+
 export default {
   data() {
     return {
@@ -117,8 +119,20 @@ export default {
       email: '',
       username: '',
       password: '',
+      token: '',
       loading: false,
     };
+  },
+  mounted() {
+    const email = this.$route.query.email; 
+    const token = this.$route.query.token;
+    if (email && token) {
+      console.log(`Email: ${email}, Code: ${token}`);
+      this.email = email; 
+      this.token = token;
+      this.isLoginMode = false;
+      this.isRegisterMode = true;
+    }
   },
   methods: {
     toggleMode(mode) {
@@ -135,6 +149,7 @@ export default {
         });
         if (response.ok) {
           alert('Veiksmīga pieteikšanās!');
+          this.$router.push('/');
         } else {
           alert('Nepareizi ievadīti dati.');
         }
@@ -151,10 +166,9 @@ export default {
           body: JSON.stringify({ email: this.email }),
         });
         if (response.ok) {
-          alert('Verifikācijas e-pasts nosūtīts.');
-          this.toggleMode('register');
+          alert('Kods nosūtīts!'); 
         } else {
-          alert('Kļūda nosūtot verifikācijas e-pastu.');
+          console.log('Kļūda nosūtot verifikācijas e-pastu.');
         }
       } catch (error) {
         console.error(error);
@@ -169,14 +183,16 @@ export default {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            username: this.username,
+            username: this.username, 
             email: this.email,
             password: this.password,
+            token: this.token
           }),
         });
         if (response.ok) {
           alert('Reģistrācija veiksmīga!');
           this.toggleMode('login');
+          this.$router.push('/');  
         } else {
           alert('Kļūda reģistrējoties.');
         }
@@ -188,7 +204,7 @@ export default {
     },
   },
 };
-</script>
+</script> 
 
 <style scoped>
 .text-blue-600 {
