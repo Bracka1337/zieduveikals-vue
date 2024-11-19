@@ -227,6 +227,13 @@ const fetchCartItems = async () => {
         price: item.price_per_unit * item.discount_factor,
         image: item.selected_option.images[0] || 'https://via.placeholder.com/150',
       }))
+
+      if (data.promocode) {
+        appliedPromocode.value = data.promocode;
+        promocode.value = data.promocode.code;
+      } else {
+        appliedPromocode.value = null
+      }
     } else {
       const errorData = await response.json()
       showNotification(errorData.message || 'Neizdevās iegūt groza preces.', 'error')
@@ -238,6 +245,7 @@ const fetchCartItems = async () => {
     loading.value = false
   }
 }
+
 
 const removeFromCart = async (id) => {
   const accessToken = localStorage.getItem('access_token')
@@ -342,27 +350,17 @@ const initiateOrder = async () => {
 
 const applyPromocode = async () => {
   const accessToken = localStorage.getItem('access_token')
-  try {
-    const response = await fetch(`https://ziedu-veikals.vercel.app/promocode/${promocode.value}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    })
+  const response = await fetch(`https://ziedu-veikals.vercel.app/promocode/${promocode.value}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  })
 
-    if (response.ok) {
-      const data = await response.json()
-      appliedPromocode.value = data
-      promocode.value = ''
-      showNotification(`Atlaides kods ${data.code} veiksmīgi pielietots.`, 'success')
-    } else {
-      const errorData = await response.json()
-      showNotification(errorData.message || 'Neizdevās pielietot atlaides kodu.', 'error')
-    }
-  } catch (error) {
-    console.error('Kļūda, pielietojot atlaides kodu:', error)
-    showNotification('Kļūda savienojumā ar serveri.', 'error')
-  }
+  location.reload();
+   
+ 
 }
+
 </script>

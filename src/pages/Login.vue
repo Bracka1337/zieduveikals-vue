@@ -5,7 +5,7 @@
         {{ isLoginMode ? 'Ieiet' : isEmailVerificationMode ? 'Verificēt E-pastu' : 'Reģistrēties' }}
       </h2>
 
-      <!-- Login Forma -->
+      <!-- Login Form -->
       <form v-if="isLoginMode" class="space-y-4" @submit.prevent="loginUser">
         <div>
           <label class="block text-sm font-medium text-gray-700" for="username">Lietotājvārds</label>
@@ -43,7 +43,7 @@
         </p>
       </form>
 
-      <!-- E-pasta Verifikācijas Forma -->
+      <!-- Email Verification Form -->
       <form v-if="isEmailVerificationMode" class="space-y-4" @submit.prevent="sendVerificationEmail">
         <div>
           <label class="block text-sm font-medium text-gray-700" for="email">E-pasts</label>
@@ -71,7 +71,7 @@
         </p>
       </form>
 
-      <!-- Reģistrācijas Forma -->
+      <!-- Registration Form -->
       <form v-if="isRegisterMode" class="space-y-4" @submit.prevent="registerUser">
         <div>
           <label class="block text-sm font-medium text-gray-700" for="reg-username">Lietotājvārds</label>
@@ -108,8 +108,6 @@
 </template>
 
 <script>
-import { isRegExp } from 'lodash';
-
 export default {
   data() {
     return {
@@ -147,14 +145,18 @@ export default {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username: this.username, password: this.password }),
         });
-        if (response.ok) {
+
+        const data = await response.json(); // Parse response to JSON
+        if (response.ok && data.access_token) {
+          const token = data.access_token; // Get access token from response
+          localStorage.setItem('access_token', token); // Store token in localStorage
           alert('Veiksmīga pieteikšanās!');
-          this.$router.push('/');
+          this.$router.push('/'); // Redirect to home page
         } else {
-          alert('Nepareizi ievadīti dati.');
+          alert(data.message || 'Nepareizi ievadīti dati.');
         }
       } catch (error) {
-        console.error(error);
+        console.error('Error during login:', error);
       }
     },
     async sendVerificationEmail() {
@@ -166,12 +168,12 @@ export default {
           body: JSON.stringify({ email: this.email }),
         });
         if (response.ok) {
-          alert('Kods nosūtīts!'); 
+          alert('Kods nosūtīts!');
         } else {
           console.log('Kļūda nosūtot verifikācijas e-pastu.');
         }
       } catch (error) {
-        console.error(error);
+        console.error('Error sending verification email:', error);
       } finally {
         this.loading = false;
       }
@@ -189,22 +191,31 @@ export default {
             token: this.token
           }),
         });
+
+        const data = await response.json(); // Parse response to JSON
         if (response.ok) {
+          const token = data.access_token; // Get access token from response
+          localStorage.setItem('access_token', token); // Store token in localStorage
           alert('Reģistrācija veiksmīga!');
           this.toggleMode('login');
-          this.$router.push('/');  
+          this.$router.push('/login');
         } else {
-          alert('Kļūda reģistrējoties.');
+          alert(data.message || 'Kļūda reģistrējoties.');
         }
       } catch (error) {
-        console.error(error);
+        console.error('Error during registration:', error);
       } finally {
         this.loading = false;
       }
     },
+    logout() {
+      localStorage.removeItem('access_token'); // Remove token from localStorage
+      alert('Jūs esat veiksmīgi izrakstījies.');
+      this.$router.push('/login'); // Redirect to login page
+    }
   },
 };
-</script> 
+</script>
 
 <style scoped>
 .text-blue-600 {
