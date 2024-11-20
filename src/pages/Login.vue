@@ -5,7 +5,6 @@
         {{ isLoginMode ? 'Ieiet' : isEmailVerificationMode ? 'Verificēt E-pastu' : 'Reģistrēties' }}
       </h2>
 
-      <!-- Login Form -->
       <form v-if="isLoginMode" class="space-y-4" @submit.prevent="loginUser">
         <div>
           <label class="block text-sm font-medium text-gray-700" for="username">Lietotājvārds</label>
@@ -43,7 +42,7 @@
         </p>
       </form>
 
-      <!-- Email Verification Form -->
+  
       <form v-if="isEmailVerificationMode" class="space-y-4" @submit.prevent="sendVerificationEmail">
         <div>
           <label class="block text-sm font-medium text-gray-700" for="email">E-pasts</label>
@@ -217,8 +216,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.text-blue-600 {
-  cursor: pointer;
-}
-</style>
+
