@@ -23,6 +23,33 @@
       </div>
     </div>
 
+    <!-- Purchase History Section -->
+    <div class="bg-white shadow rounded-lg overflow-hidden" v-if="isLoggedIn && orders.length > 0">
+      <div class="p-6">
+        <h2 class="text-2xl font-bold mb-4">Pirkuma vēsture</h2>
+        <div class="space-y-4">
+          <div v-for="order in orders" :key="order.id" class="border border-gray-300 rounded-lg p-4">
+            <h3 class="text-lg font-semibold text-gray-800">Pasūtījuma ID: {{ order.order_id }}</h3>
+            <p class="text-sm text-gray-600">Izveidots: {{ new Date(order.created_at).toLocaleString() }}</p>
+            <p class="text-sm text-gray-600">Statuss: {{ order.status }}</p>
+            <div class="mt-3">
+              <h4 class="font-medium text-gray-700">Preces:</h4>
+              <ul class="space-y-2">
+                <li v-for="item in order.items" :key="item.id" class="flex gap-4">
+                  <img :src="item.product_photo" alt="Product Image" class="w-16 h-16 object-cover rounded border">
+                  <div>
+                    <p class="font-medium">{{ item.product_name }}</p>
+                    <p class="text-sm text-gray-600">Daudzums: {{ item.quantity }}</p>
+                    <p class="text-sm text-gray-600">Cena: {{ item.price.toFixed(2) }} €</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <teleport to="body">
       <div v-if="isChangePasswordDialogOpen" class="fixed inset-0 bg-opacity-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
