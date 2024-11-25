@@ -1,6 +1,5 @@
 <template>
   <v-main>
-    <!-- App Bar -->
     <v-app-bar app clipped-left>
       <v-app-bar-nav-icon @click="drawer = !drawer" class="d-md-none"></v-app-bar-nav-icon>
       <v-toolbar-title>Users</v-toolbar-title>
@@ -17,25 +16,20 @@
       />
     </v-app-bar>
 
-    <!-- Navigation Drawer (Optional) -->
     <v-navigation-drawer v-model="drawer" app>
-      <!-- Drawer content goes here -->
       <v-list>
         <v-list-item>
           <v-list-item-content>
             <v-list-item-title>Navigation Item</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <!-- Add more navigation items as needed -->
       </v-list>
     </v-navigation-drawer>
 
-    <!-- Loading Animation -->
     <v-container fluid v-if="isLoading" class="d-flex justify-center align-center" style="height: 80vh;">
       <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
     </v-container>
 
-    <!-- Users Grid -->
     <v-container fluid v-else>
       <v-row>
         <v-col
@@ -72,7 +66,6 @@
       </v-row>
     </v-container>
 
-    <!-- Edit User Dialog -->
     <v-dialog v-model="editDialog" max-width="500px">
       <v-card>
         <v-card-title>
@@ -103,11 +96,12 @@
               label="Promocode"
               v-model="editFormData.promocode_id"
               :items="promocodes"
-              item-text="code"
+              item-title="code"
               item-value="id"
               clearable
               placeholder="Select a promocode"
             ></v-select>
+
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -118,7 +112,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- Snackbar for Feedback Messages -->
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
       {{ snackbar.message }}
     </v-snackbar>
@@ -169,7 +162,7 @@ export default defineComponent({
       color: '',
     });
 
-    const isLoading = ref(true); // Added loading state
+    const isLoading = ref(true);
 
     const AUTH_TOKEN = "Bearer " + localStorage.getItem('access_token');
 
@@ -190,13 +183,13 @@ export default defineComponent({
         console.error('Error loading users:', error);
         showSnackbar('Error loading users', 'error');
       } finally {
-        isLoading.value = false; // Set loading to false after data is fetched
+        isLoading.value = false;
       }
     };
 
     const fetchPromocodes = async () => {
       try {
-        const response = await axios.get('https://ziedu-veikals.vercel.app/get_promocodes', {
+        const response = await axios.get('https://ziedu-veikals.vercel.app/promocodes', {
           headers: {
             Authorization: AUTH_TOKEN,
           },
@@ -204,7 +197,6 @@ export default defineComponent({
         promocodes.value = response.data.promocodes;
       } catch (error) {
         console.error('Error loading promocodes:', error);
-       
       }
     };
 
@@ -222,11 +214,7 @@ export default defineComponent({
     };
 
     const openEditDialog = (user: User) => {
-      editFormData.id = user.id;
-      editFormData.username = user.username;
-      editFormData.email = user.email;
-      editFormData.role = user.role;
-      editFormData.promocode_id = user.promocode_id;
+      Object.assign(editFormData, user);
       editDialog.value = true;
     };
 
@@ -234,8 +222,11 @@ export default defineComponent({
       editDialog.value = false;
     };
 
+    const editForm = ref();
+
     const submitEdit = async () => {
-      if (!formValid.value) return;
+      const isValid = await editForm.value.validate();
+      if (!isValid) return;
 
       try {
         const payload: any = {
@@ -259,13 +250,13 @@ export default defineComponent({
         if (response.status === 200) {
           const index = users.value.findIndex((u) => u.id === editFormData.id);
           if (index !== -1) {
-            users.value[index] = {
+            users.value.splice(index, 1, {
               ...users.value[index],
               username: editFormData.username,
               email: editFormData.email,
               role: editFormData.role,
               promocode_id: editFormData.promocode_id,
-            };
+            });
             handleSearch();
           }
           showSnackbar('User updated successfully', 'success');
@@ -295,7 +286,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      isLoading.value = true; // Ensure loading is true before fetching data
+      isLoading.value = true;
       fetchUsers();
       fetchPromocodes();
     });
@@ -319,7 +310,8 @@ export default defineComponent({
       showSnackbar,
       snackbar,
       formatDate,
-      isLoading, // Return the loading state
+      isLoading,
+      editForm,
     };
   },
 });

@@ -116,6 +116,8 @@
               type="number"
               min="0"
               max="100"
+              :rules="[v => v >= 0 || 'Discount cannot be negative']"
+              required
             ></v-text-field>
             <v-checkbox
               label="Featured Product"
