@@ -164,7 +164,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 
-const PVN_RATE = 0.21 // 21% VAT rate for Latvia
+const PVN_RATE = 0.21 
 
 const cartItems = ref([])
 const loading = ref(false)
@@ -199,8 +199,6 @@ const pvnDiscount = computed(() =>
 const promocodeDiscount = computed(() => 
   appliedPromocode.value ? (subtotal.value - pvnDiscount.value) * (appliedPromocode.value.discount / 100) : 0
 )
-
-
 
 const totalPrice = computed(() => 
   subtotal.value - pvnDiscount.value - promocodeDiscount.value
