@@ -235,7 +235,7 @@ const fetchCartItems = async () => {
   const accessToken = localStorage.getItem('access_token')
 
   if (!accessToken) {
-    showNotification('Jums ir jāpiesakās, lai skatītu grozu.', 'error')
+    location.href = '/login'
     loading.value = false
     return
   }

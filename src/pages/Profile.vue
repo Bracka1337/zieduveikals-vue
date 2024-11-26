@@ -125,7 +125,7 @@ const fetchUserData = async () => {
   const token = localStorage.getItem('access_token');
 
   if (!token) {
-    showNotification('error', 'Autentifikācijas marķieris nav atrasts');
+    location.href = '/login';
     return;
   }
 

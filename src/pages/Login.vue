@@ -123,6 +123,13 @@ export default {
   mounted() {
     const email = this.$route.query.email; 
     const token = this.$route.query.token;
+    const storedToken = localStorage.getItem('access_token');
+    if (storedToken) {
+      // Redirect to home page if token exists
+      this.$router.push('/');
+      return; // Exit early to prevent further execution
+    }
+
     if (email && token) {
       console.log(`Email: ${email}, Code: ${token}`);
       this.email = email; 
@@ -149,8 +156,7 @@ export default {
         if (response.ok && data.access_token) {
           const token = data.access_token; // Get access token from response
           localStorage.setItem('access_token', token); // Store token in localStorage
-          alert('Veiksmīga pieteikšanās!');
-          this.$router.push('/'); // Redirect to home page
+          location.reload();
         } else {
           alert(data.message || 'Nepareizi ievadīti dati.');
         }

@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="hidden lg:flex items-center space-x-6">
-        <a class="text-gray-500 hover:text-black" href="/Cart">
+        <a  v-if="accessToken" class="text-gray-500 hover:text-black" href="/Cart">
           <svg
             class="w-6 h-6"
             fill="none"
@@ -22,7 +22,7 @@
             <path d="M3 3h2l.4 2M7 13h10l1.25-5H6.75M16 21a2 2 0 100-4 2 2 0 000 4zM8 21a2 2 0 100-4 2 2 0 000 4zM5 3h14l-1.25 5H6.25L5 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
           </svg>
         </a>
-        <a class="text-gray-500 hover:text-black" href="/Profile">
+        <a v-if="accessToken" class="text-gray-500 hover:text-black" href="/Profile">
           <svg
             class="w-6 h-6"
             fill="none"
