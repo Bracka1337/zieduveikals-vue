@@ -15,8 +15,8 @@
               <div class="text-left">
                 <p class="font-bold">{{ item.name }}</p>
                 <p class="text-sm text-gray-500">
-                  <span class="line-through">{{ (item.price_per_unit * item.quantity).toFixed(2) }} €</span>
-                  <span class="ml-2">{{ (item.line_total).toFixed(2) }} €</span>
+                  <span class="line-through mr-2" v-if="(item.price_per_unit * item.quantity).toFixed(2) != (item.line_total).toFixed(2)">{{ (item.price_per_unit * item.quantity).toFixed(2) }} €</span>
+                  <span class="">{{ (item.line_total).toFixed(2) }} €</span>
                 </p>
                 <p class="text-xs text-gray-400">{{ item.selected_option.name }}</p>
               </div>
@@ -200,9 +200,13 @@ const promocodeDiscount = computed(() =>
   appliedPromocode.value ? (subtotal.value - pvnDiscount.value) * (appliedPromocode.value.discount / 100) : 0
 )
 
+
+
 const totalPrice = computed(() => 
   subtotal.value - pvnDiscount.value - promocodeDiscount.value
 )
+
+
 
 const notificationClass = computed(() => {
   switch (notificationType.value) {
