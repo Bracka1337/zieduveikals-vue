@@ -397,17 +397,14 @@ const applyPromocode = async () => {
       },
     })
 
-    if (response.ok) {
-      const data = await response.json()
-      appliedPromocode.value = data.promocode
-      showNotification(`Atlaides kods "${data.promocode.code}" veiksmīgi pielietots.`, 'success')
+    if(response.status == "success") {
+      location.reload();
     } else {
-      const errorData = await response.json()
-      showNotification(errorData.message || 'Neizdevās pielietot atlaides kodu.', 'error')
+      showNotification('Nepareizs atlaides kods.', 'error')
     }
+
   } catch (error) {
     console.error('Kļūda, pielietojot atlaides kodu:', error)
-    showNotification('Kļūda savienojumā ar serveri.', 'error')
   }
 }
 </script>
