@@ -14,7 +14,10 @@
               <img :src="item.image" :alt="item.name" class="w-24 h-24 object-cover rounded" />
               <div class="text-left">
                 <p class="font-bold">{{ item.name }}</p>
-                <p class="text-sm text-gray-500">{{ item.price.toFixed(2) }} €</p>
+                <p class="text-sm text-gray-500">
+                  <span class="line-through">{{ (item.price_per_unit * item.quantity).toFixed(2) }} €</span>
+                  <span class="ml-2">{{ (item.line_total).toFixed(2) }} €</span>
+                </p>
                 <p class="text-xs text-gray-400">{{ item.selected_option.name }}</p>
               </div>
             </div>
@@ -35,42 +38,50 @@
             </div>
           </div>
 
-          <div class="flex justify-between items-center mt-6">
-            <p class="text-lg font-bold">Kopumā:</p>
-            <p class="text-lg font-bold">{{ subtotal.toFixed(2) }} €</p>
-          </div>
+          <div class=" p-4 rounded-lg">
+            <div class="flex justify-between items-center mt-2">
+              <p class="text-lg">Kopējā cena bez atlaides:</p>
+              <p class="text-lg">{{ originalSubtotal.toFixed(2) }} €</p>
+            </div>
 
-          <div v-if="orderInfo.customer_status === 'jur'" class="flex justify-between items-center mt-2">
-            <p class="text-lg">PVN atlaide (21%):</p>
-            <p class="text-lg">-{{ pvnDiscount.toFixed(2) }} €</p>
-          </div>
 
-          <div v-if="appliedPromocode" class="flex justify-between items-center mt-2">
-            <p class="text-lg">Atlaide ({{ appliedPromocode.code }}):</p>
-            <p class="text-lg">-{{ promocodeDiscount.toFixed(2) }} €</p>
-          </div>
+            <div class="flex justify-between items-center mt-2">
+              <p class="text-lg font-bold">Kopumā:</p>
+              <p class="text-lg font-bold">{{ subtotal.toFixed(2) }} €</p>
+            </div>
 
-          <div class="flex justify-between items-center mt-2">
-            <p class="text-xl font-bold">Gala summa:</p>
-            <p class="text-xl font-bold">{{ totalPrice.toFixed(2) }} €</p>
-          </div>
+            <div v-if="orderInfo.customer_status === 'jur'" class="flex justify-between items-center mt-2">
+              <p class="text-lg">PVN atlaide (21%):</p>
+              <p class="text-lg">-{{ pvnDiscount.toFixed(2) }} €</p>
+            </div>
 
-          <div class="mt-4">
-            <label for="promocode" class="block text-sm font-medium text-gray-700">Atlaides kods</label>
-            <div class="flex mt-1">
-              <input
-                id="promocode"
-                v-model="promocode"
-                type="text"
-                placeholder="Ievadiet atlaides kodu"
-                class="flex-grow mr-2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              />
-              <button
-                @click="applyPromocode"
-                class="bg-[#ffc2c2] text-white px-4 py-2 rounded hover:bg-[#ffb2b2] transition duration-200"
-              >
-                Pielietot
-              </button>
+            <div v-if="appliedPromocode" class="flex justify-between items-center mt-2">
+              <p class="text-lg">Atlaide ({{ appliedPromocode.code }}):</p>
+              <p class="text-lg">-{{ promocodeDiscount.toFixed(2) }} €</p>
+            </div>
+
+            <div class="flex justify-between items-center mt-2">
+              <p class="text-xl font-bold">Gala summa:</p>
+              <p class="text-xl font-bold">{{ totalPrice.toFixed(2) }} €</p>
+            </div>
+
+            <div class="mt-4">
+              <label for="promocode" class="block text-sm font-medium text-gray-700">Atlaides kods</label>
+              <div class="flex mt-1">
+                <input
+                  id="promocode"
+                  v-model="promocode"
+                  type="text"
+                  placeholder="Ievadiet atlaides kodu"
+                  class="flex-grow mr-2 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+                <button
+                  @click="applyPromocode"
+                  class="bg-[#ffc2c2] text-white px-4 py-2 rounded hover:bg-[#ffb2b2] transition duration-200"
+                >
+                  Pielietot
+                </button>
+              </div>
             </div>
           </div>
         </template>
@@ -172,10 +183,26 @@ const orderInfo = ref({
 const notification = ref('')
 const notificationType = ref('')
 
-const subtotal = computed(() => cartItems.value.reduce((total, item) => total + item.line_total, 0))
-const pvnDiscount = computed(() => orderInfo.value.customer_status === 'jur' ? subtotal.value * PVN_RATE : 0)
-const promocodeDiscount = computed(() => appliedPromocode.value ? (subtotal.value - pvnDiscount.value) * (appliedPromocode.value.discount / 100) : 0)
-const totalPrice = computed(() => subtotal.value - pvnDiscount.value - promocodeDiscount.value)
+// Computed properties
+const originalSubtotal = computed(() => 
+  cartItems.value.reduce((total, item) => total + (item.price_per_unit * item.quantity), 0)
+)
+
+const subtotal = computed(() => 
+  cartItems.value.reduce((total, item) => total + item.line_total, 0)
+)
+
+const pvnDiscount = computed(() => 
+  orderInfo.value.customer_status === 'jur' ? subtotal.value * PVN_RATE : 0
+)
+
+const promocodeDiscount = computed(() => 
+  appliedPromocode.value ? (subtotal.value - pvnDiscount.value) * (appliedPromocode.value.discount / 100) : 0
+)
+
+const totalPrice = computed(() => 
+  subtotal.value - pvnDiscount.value - promocodeDiscount.value
+)
 
 const notificationClass = computed(() => {
   switch (notificationType.value) {
@@ -224,7 +251,8 @@ const fetchCartItems = async () => {
       const data = await response.json()
       cartItems.value = data.cart_items.map(item => ({
         ...item,
-        price: item.price_per_unit * item.discount_factor,
+        price_per_unit: item.price_per_unit, // Keep original price
+        line_total: parseFloat((item.price_per_unit * item.quantity * item.discount_factor).toFixed(2)),
         image: item.selected_option.images[0] || 'https://via.placeholder.com/150',
       }))
 
@@ -245,7 +273,6 @@ const fetchCartItems = async () => {
     loading.value = false
   }
 }
-
 
 const removeFromCart = async (id) => {
   const accessToken = localStorage.getItem('access_token')
@@ -296,17 +323,21 @@ const updateQuantity = async (id, quantity) => {
     if (response.ok) {
       const data = await response.json()
       item.quantity = quantity
-      item.line_total = quantity * item.price
+      item.line_total = parseFloat((quantity * item.price_per_unit * item.discount_factor).toFixed(2))
       showNotification('Preces daudzums veiksmīgi atjaunināts.', 'success')
     } else {
       const errorData = await response.json()
       showNotification(errorData.message || 'Neizdevās atjaunināt preces daudzumu.', 'error')
-      item.quantity = errorData.max
+      if (errorData.max) {
+        item.quantity = errorData.max
+        item.line_total = parseFloat((errorData.max * item.price_per_unit * item.discount_factor).toFixed(2))
+      }
     }
   } catch (error) {
     console.error('Kļūda, atjauninot preces daudzumu:', error)
     showNotification('Kļūda savienojumā ar serveri.', 'error')
     item.quantity = previousQuantity
+    item.line_total = parseFloat((previousQuantity * item.price_per_unit * item.discount_factor).toFixed(2))
   }
 }
 
@@ -333,6 +364,7 @@ const initiateOrder = async () => {
       const data = await response.json()
       paymentLink.value = data.payment_link
       showNotification('Jūsu pasūtījums ir veiksmīgi izveidots.', 'success')
+      // Optionally, clear the cart or redirect the user
     } else if (response.status === 400) {
       const errorData = await response.json()
       showNotification(errorData.message || 'Neizdevās izveidot pasūtījumu. Lūdzu, pārbaudiet ievadīto informāciju.', 'error')
@@ -340,7 +372,6 @@ const initiateOrder = async () => {
       throw new Error('Server error')
     }
   } catch (error) {
-    
     console.error('Kļūda, veidojot pasūtījumu:', error)
     showNotification('Kļūda savienojumā ar serveri. Lūdzu, mēģiniet vēlreiz.', 'error')
   } finally {
@@ -349,18 +380,38 @@ const initiateOrder = async () => {
 }
 
 const applyPromocode = async () => {
+  if (!promocode.value) {
+    showNotification('Lūdzu, ievadiet atlaides kodu.', 'error')
+    return
+  }
+
   const accessToken = localStorage.getItem('access_token')
-  const response = await fetch(`https://ziedu-veikals.vercel.app/promocode/${promocode.value}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`,
-    },
-  })
+  try {
+    const response = await fetch(`https://ziedu-veikals.vercel.app/promocode/${promocode.value}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    })
 
-  location.reload();
-   
- 
+    if (response.ok) {
+      const data = await response.json()
+      appliedPromocode.value = data.promocode
+      showNotification(`Atlaides kods "${data.promocode.code}" veiksmīgi pielietots.`, 'success')
+    } else {
+      const errorData = await response.json()
+      showNotification(errorData.message || 'Neizdevās pielietot atlaides kodu.', 'error')
+    }
+  } catch (error) {
+    console.error('Kļūda, pielietojot atlaides kodu:', error)
+    showNotification('Kļūda savienojumā ar serveri.', 'error')
+  }
 }
-
 </script>
+
+<style scoped>
+.line-through {
+  text-decoration: line-through;
+}
+</style>
