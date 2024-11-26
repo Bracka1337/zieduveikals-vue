@@ -395,7 +395,10 @@ const applyPromocode = async () => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`,
       },
-    })
+    }).then(response => response.json());
+
+
+    console.log(response)
 
     if(response.status == "success") {
       location.reload();
